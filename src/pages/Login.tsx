@@ -74,7 +74,7 @@ export default function Login() {
     <div className="flex h-screen items-center justify-center relative z-0">
       <Card className="w-[400px] bg-white">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center">Boitoi Login</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">Shukr Admin Login</CardTitle>
           {error && (
             <div className="mt-2 p-2 bg-red-50 border border-danger rounded-md">
               <p className="text-danger text-sm text-center">{error}</p>

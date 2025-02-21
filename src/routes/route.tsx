@@ -1,8 +1,17 @@
 import App from "@/App";
-import { Home, Order, Product, Users } from "@/pages";
+import { Home, Users } from "@/pages";
+import {
+  DailyDuaPage, 
+  HomeScreenPage, 
+  NatureImagePage, 
+  PositiveThinkingPage, 
+  ShukrInsPirationPage, 
+  ShukrPostPage, 
+  StickyNotePage } from "@/pages/homeScreen";
+
 import Login from "@/pages/Login";
-import ProductAdd from "@/pages/homeScreen/Product.add";
-import ProductEdit from "@/pages/homeScreen/Product.edit";
+// import ProductAdd from "@/pages/product/Product.add";
+import ProductEdit from "@/pages/product/Product.edit";
 import { AdminRoute, PrivateRoute } from "@/utils/PrivateRoute";
 import { createBrowserRouter } from 'react-router-dom';
 
@@ -20,24 +29,24 @@ const routes = createBrowserRouter([
         path: '/home',
         element: <Home />
       },
-      {
-        path: '/product',
-        element:
-        <PrivateRoute>
-            <AdminRoute>
-              <Product />
-            </AdminRoute>
-          </PrivateRoute>},
-      {
-        path: '/product/add-product',
-        element: (
-          <PrivateRoute>
-            <AdminRoute>
-              <ProductAdd />
-            </AdminRoute>
-          </PrivateRoute>
-        )
-      },
+      // {
+      //   path: '/product',
+      //   element:
+      //   <PrivateRoute>
+      //       <AdminRoute>
+      //         <Product />
+      //       </AdminRoute>
+      //     </PrivateRoute>},
+      // {
+      //   path: '/product/add-product',
+      //   element: (
+      //     <PrivateRoute>
+      //       <AdminRoute>
+      //         <ProductAdd />
+      //       </AdminRoute>
+      //     </PrivateRoute>
+      //   )
+      // },
       {
         path: '/product/edit-product/:id',
         element: (
@@ -49,8 +58,32 @@ const routes = createBrowserRouter([
         )
       },
       {
-        path: '/order',
-        element: <Order />
+        path: '/home-screen',
+        element: <HomeScreenPage />
+      },
+      {
+        path: '/daily-dua',
+        element: <DailyDuaPage />
+      },
+      {
+        path: '/shukr-post',
+        element: <ShukrPostPage />
+      },
+      {
+        path: '/shukr-ins',
+        element: <ShukrInsPirationPage />
+      },
+      {
+        path: '/nature-beauty',
+        element: <NatureImagePage />
+      },
+      {
+        path: '/positive-thinking',
+        element: <PositiveThinkingPage />
+      },
+      {
+        path: '/sticky-notes',
+        element: <StickyNotePage />
       },
       {
         path: '/user',

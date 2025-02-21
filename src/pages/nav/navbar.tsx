@@ -20,7 +20,7 @@ const Navbar = () => {
           {/* Logo */}
           <div className="flex justify-between items-center mt-2">
             <div className={`font-bold transition-all duration-500 ${isSidebarOpen ? "text-xl text-center" : "text-center text-lg ml-2 "}`}>
-              <Link to="/">{isSidebarOpen ? "Shukr Dashboard" : "SD"}</Link>
+              <Link to="/">{isSidebarOpen ? "Shukr Admin" : "SA"}</Link>
             </div>
           </div>
 
@@ -54,22 +54,25 @@ const Navbar = () => {
                   {/* Product Submenu */}
                   {openSubmenu === 'product' && isSidebarOpen && (
                     <div className="ml-8 space-y-2">
-                      <Link to="/Product" className="flex items-center p-2 hover:bg-secondary rounded-md">
+                      <Link to="/home-screen" className="flex items-center p-2 hover:bg-secondary rounded-md">
+                        <span className="text-base-1">Home</span>
+                      </Link>
+                      <Link to="/daily-dua" className="flex items-center p-2 hover:bg-secondary rounded-md">
                         <span className="text-base-1">Daily Dua</span>
                       </Link>
-                      <Link to="/Product/add-product" className="flex items-center p-2 hover:bg-secondary rounded-md">
+                      <Link to="/shukr-post" className="flex items-center p-2 hover:bg-secondary rounded-md">
                         <span className="text-base-1">Shukr Post</span>
                       </Link>
-                      <Link to="/Product/add-product" className="flex items-center p-2 hover:bg-secondary rounded-md">
+                      <Link to="/shukr-ins" className="flex items-center p-2 hover:bg-secondary rounded-md">
                         <span className="text-base-1">Shukr Ins</span>
                       </Link>
-                      <Link to="/Product/add-product" className="flex items-center p-2 hover:bg-secondary rounded-md">
+                      <Link to="/nature-beauty" className="flex items-center p-2 hover:bg-secondary rounded-md">
                         <span className="text-base-1">Nature Beauty</span>
                       </Link>
-                      <Link to="/Product/add-product" className="flex items-center p-2 hover:bg-secondary rounded-md">
+                      <Link to="/positive-thinking" className="flex items-center p-2 hover:bg-secondary rounded-md">
                         <span className="text-base-1">Positive Thiniking</span>
                       </Link>
-                      <Link to="/Product/add-product" className="flex items-center p-2 hover:bg-secondary rounded-md">
+                      <Link to="/sticky-notes" className="flex items-center p-2 hover:bg-secondary rounded-md">
                         <span className="text-base-1">Sticky Notes</span>
                       </Link>
                     </div>
