@@ -11,7 +11,7 @@ const LoadingSpinner = ({ className, text }: LoadingSpinnerProps) => {
     // <div className='border-2 border-dashed rounded-full w-5 h-5 animate-spin'></div>
     <div
       className={twMerge(
-        'h-full w-full flex flex-col items-center justify-center',
+        'h-screen w-full max-auto flex flex-col items-center justify-center',
         className,
       )}
     >

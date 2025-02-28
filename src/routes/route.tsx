@@ -8,6 +8,9 @@ import {
   ShukrInsPirationPage, 
   ShukrPostPage, 
   StickyNotePage } from "@/pages/homeScreen";
+import DailyDuaAdd from "@/pages/homeScreen/homeScreen.dua.add";
+import DailyDuaEditPage from "@/pages/homeScreen/homeScreen.dua.edit";
+import ShukrPostAddPage from "@/pages/homeScreen/homeScreen.shukrPost.add";
 
 import Login from "@/pages/Login";
 // import ProductAdd from "@/pages/product/Product.add";
@@ -66,9 +69,22 @@ const routes = createBrowserRouter([
         element: <DailyDuaPage />
       },
       {
+        path: '/daily-dua/add',
+        element: <DailyDuaAdd />
+      },
+      {
+        path: '/daily-dua/edit/:id',
+        element: <DailyDuaEditPage />
+      },
+      {
         path: '/shukr-post',
         element: <ShukrPostPage />
       },
+      {
+        path: '/shukr-post/add',
+        element: <ShukrPostAddPage />
+      },
+      
       {
         path: '/shukr-ins',
         element: <ShukrInsPirationPage />

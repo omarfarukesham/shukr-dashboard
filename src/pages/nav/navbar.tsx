@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useSelector } from 'react-redux';
 import { RootState } from "@/store/store";
 import { useState } from 'react';
@@ -8,9 +8,14 @@ const Navbar = () => {
   const isSidebarOpen = useSelector((state: RootState) => state.toggle.value);
   const role = localStorage.getItem('role');
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
+  const location = useLocation();
 
   const toggleSubmenu = (menu: string) => {
     setOpenSubmenu(openSubmenu === menu ? null : menu);
+  };
+
+  const isActiveRoute = (path: string) => {
+    return location.pathname === path;
   };
 
   return (
@@ -28,7 +33,13 @@ const Navbar = () => {
           <div className="py-5">
             {role === "admin" && (
               <div>
-                <Link to="/home" className="flex items-center space-x-2 p-3 hover:bg-secondary rounded-md">
+                <Link 
+                  to="/home" 
+                  className={`flex items-center space-x-2 p-3 rounded-md 
+                    ${isActiveRoute('/home') 
+                      ? 'bg-secondary text-white' 
+                      : 'hover:bg-secondary'}`}
+                >
                   <HomeIcon />
                   {isSidebarOpen && <span className="text-base-1 px-1">Dashboard</span>}
                 </Link>
@@ -54,25 +65,25 @@ const Navbar = () => {
                   {/* Product Submenu */}
                   {openSubmenu === 'product' && isSidebarOpen && (
                     <div className="ml-8 space-y-2">
-                      <Link to="/home-screen" className="flex items-center p-2 hover:bg-secondary rounded-md">
+                      <Link to="/home-screen" className={`flex items-center p-2 rounded-md ${isActiveRoute('/home-screen') ? 'bg-secondary text-white' : 'hover:bg-secondary'}`}>
                         <span className="text-base-1">Home</span>
                       </Link>
-                      <Link to="/daily-dua" className="flex items-center p-2 hover:bg-secondary rounded-md">
+                      <Link to="/daily-dua" className={`flex items-center p-2 rounded-md ${isActiveRoute('/daily-dua') ? 'bg-secondary text-white' : 'hover:bg-secondary'}`}>
                         <span className="text-base-1">Daily Dua</span>
                       </Link>
-                      <Link to="/shukr-post" className="flex items-center p-2 hover:bg-secondary rounded-md">
+                      <Link to="/shukr-post" className={`flex items-center p-2 rounded-md ${isActiveRoute('/shukr-post') ? 'bg-secondary text-white' : 'hover:bg-secondary'}`}>
                         <span className="text-base-1">Shukr Post</span>
                       </Link>
-                      <Link to="/shukr-ins" className="flex items-center p-2 hover:bg-secondary rounded-md">
+                      <Link to="/shukr-ins" className={`flex items-center p-2 rounded-md ${isActiveRoute('/shukr-ins') ? 'bg-secondary text-white' : 'hover:bg-secondary'}`}>
                         <span className="text-base-1">Shukr Ins</span>
                       </Link>
-                      <Link to="/nature-beauty" className="flex items-center p-2 hover:bg-secondary rounded-md">
+                      <Link to="/nature-beauty" className={`flex items-center p-2 rounded-md ${isActiveRoute('/nature-beauty') ? 'bg-secondary text-white' : 'hover:bg-secondary'}`}>
                         <span className="text-base-1">Nature Beauty</span>
                       </Link>
-                      <Link to="/positive-thinking" className="flex items-center p-2 hover:bg-secondary rounded-md">
+                      <Link to="/positive-thinking" className={`flex items-center p-2 rounded-md ${isActiveRoute('/positive-thinking') ? 'bg-secondary text-white' : 'hover:bg-secondary'}`}>
                         <span className="text-base-1">Positive Thiniking</span>
                       </Link>
-                      <Link to="/sticky-notes" className="flex items-center p-2 hover:bg-secondary rounded-md">
+                      <Link to="/sticky-notes" className={`flex items-center p-2 rounded-md ${isActiveRoute('/sticky-notes') ? 'bg-secondary text-white' : 'hover:bg-secondary'}`}>
                         <span className="text-base-1">Sticky Notes</span>
                       </Link>
                     </div>
@@ -80,12 +91,24 @@ const Navbar = () => {
                 </div>
 
                 {/* Other existing links */}
-                <Link to="/order" className="flex items-center space-x-2 p-3 hover:bg-secondary rounded-md">
+                <Link 
+                  to="/order" 
+                  className={`flex items-center space-x-2 p-3 rounded-md 
+                    ${isActiveRoute('/order') 
+                      ? 'bg-secondary text-white' 
+                      : 'hover:bg-secondary'}`}
+                >
                   <OrderIcon className="w-6 h-6 text-white" />
                   {isSidebarOpen && <span className="text-base-1 px-1">Explore Screen</span>}
                 </Link>
                 
-                <Link to="/user" className="flex items-center space-x-2 p-3 hover:bg-secondary rounded-md">
+                <Link 
+                  to="/user" 
+                  className={`flex items-center space-x-2 p-3 rounded-md 
+                    ${isActiveRoute('/user') 
+                      ? 'bg-secondary text-white' 
+                      : 'hover:bg-secondary'}`}
+                >
                   <UserIcon className="w-6 h-6 text-white" />
                   {isSidebarOpen && <span className="text-base-1 px-1">App Users</span>}
                 </Link>
@@ -93,7 +116,13 @@ const Navbar = () => {
             )}
             {role === "user" && (
               <div>
-                <Link to="/order" className="flex items-center space-x-2 p-3 hover:bg-secondary rounded-md">
+                <Link 
+                  to="/order" 
+                  className={`flex items-center space-x-2 p-3 rounded-md 
+                    ${isActiveRoute('/order') 
+                      ? 'bg-secondary text-white' 
+                      : 'hover:bg-secondary'}`}
+                >
                   <OrderIcon className="w-6 h-6 text-white" />
                   {isSidebarOpen && <span className="text-base-1 px-1">Orders</span>}
                 </Link>

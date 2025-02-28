@@ -11,7 +11,7 @@ type ProductTableProps = {
 };
 
 export default function ProductTable({ products, onEdit, onDelete }: ProductTableProps) {
-  console.log(products)
+  // console.log(products)
   return (
     <Table>
       {/* <TableCaption>List of available products.</TableCaption> */}

@@ -1,11 +1,11 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-const API_BASE_URL = 'https://assignment-3-gray-seven.vercel.app/api/';
+const apiUrl = "https://shukur-admin-iota.vercel.app/api/"
 
 export const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: API_BASE_URL,
+    baseUrl: apiUrl,
     prepareHeaders: (headers) => {
       const token = localStorage.getItem('token');
       if (token) {
