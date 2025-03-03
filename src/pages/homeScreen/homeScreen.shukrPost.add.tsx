@@ -18,6 +18,7 @@ interface IShukrPost {
   category: string;
   isShowing: boolean;
   publishDate: string;
+  status: string;
 }
 
 const defaultValues: Omit<IShukrPost, "image"> = {
@@ -25,6 +26,7 @@ const defaultValues: Omit<IShukrPost, "image"> = {
   details: "",
   isShowing: false,
   category: "shukrPosts",
+  status: "published" as "published | draft",
   publishDate: new Date().toISOString(),
 };
 
@@ -86,14 +88,9 @@ export default function ShukrPostPage() {
       const postData : IShukrPost = {
           ...data,
           image: uploadedImageUrl,
-      
       };
-        // const productData: TProduct = {
-        //       ...data,
-        //       image: uploadedImageUrl
-        //     };
 
-      console.log(postData);
+      // console.log(postData);
      await addContentItem({ data: postData }).unwrap();
       navigate("/shukr-post");
     } catch (error) {
@@ -122,13 +119,6 @@ export default function ShukrPostPage() {
           <input {...register("title", { required: "Title is required" })} className="w-full p-2 border rounded-lg" />
           {errors.title && <p className="text-danger text-sm">{errors.title.message}</p>}
         </div>
-
-        {/* Details */}
-        {/* <div>
-          <label className="block text-sm font-medium">Details</label>
-          <textarea {...register("details", { required: "Details are required" })} className="w-full p-2 border rounded-lg" />
-          {errors.details && <p className="text-danger text-sm">{errors.details.message}</p>}
-        </div> */}
 
         {/* Content (Rich Text Editor) */}
         <div className="">
@@ -167,12 +157,13 @@ export default function ShukrPostPage() {
 
         {/* Is Showing (Dropdown) */}
         <div>
-          <label className="text-lg font-medium">Is Showing</label>
-          <select {...register("isShowing")} className="w-full p-2 border rounded-lg">
-            <option value="true">Yes</option>
-            <option value="false">No</option>
-          </select>
-        </div>
+            <label className="text-lg font-medium">Status</label>
+            <select {...register("status", { required: true })} className="w-full p-3 border border-gray-4 rounded-lg">
+              <option className="bg-primary  text-white" value="published">Published</option>
+              <option className="bg-primary  text-white" value="draft">Draft</option>
+            </select>
+            {errors.status && <p className="text-danger text-sm">{errors.status.message}</p>}
+          </div>
 
         {/* Upload Image */}
         <div>

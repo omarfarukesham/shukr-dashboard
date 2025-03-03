@@ -5,6 +5,7 @@ import EditIcon from "@/assets/icons/EditIcon";
 import DeleteIcon from "@/assets/icons/DeleteIcon";
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import DeleteModal from "@/components/modal/deleteModal";
 
 const ShukrPostPage = () => {
     const { data, error, isLoading } = useGetHomeContentQuery();
@@ -12,6 +13,9 @@ const ShukrPostPage = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
     const navigation =  useNavigate();
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [selectedId, setSelectedId] = useState<string | null>(null);
+
     if (isLoading) return <LoadingSpinner />;
     if (error) return <p>Error fetching data</p>;
 
@@ -20,10 +24,10 @@ const ShukrPostPage = () => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const displayedPosts = shukrPosts.slice(startIndex, startIndex + itemsPerPage);
 
-    const handleDelete = async (id: string) => {
-       console.log('delete ........', id)
-        await deleteContentItem({ category: 'shukrPosts', id });
-    };
+    const handleDelete = async () => {
+        if (!selectedId) return;
+        await deleteContentItem({ id: selectedId });
+      };
 
     return (
         <div className="p-6">
@@ -35,6 +39,7 @@ const ShukrPostPage = () => {
             <Table>
                 <TableHeader>
                     <TableRow>
+                        <TableHead>SL</TableHead>
                         <TableHead>Title</TableHead>
                         <TableHead>Details</TableHead>
                         <TableHead>Image</TableHead>
@@ -45,8 +50,9 @@ const ShukrPostPage = () => {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {displayedPosts.map((item) => (
-                        <TableRow key={item._id}>
+                    {displayedPosts.map((item, index) => (
+                        <TableRow key={item._id} className="hover:bg-gray-3 transition-colors duration-200">
+                            <TableCell className="font-medium">{index + 1}</TableCell>
                             <TableCell className="font-medium">{item.title}</TableCell>
                             <TableCell>{item.details.slice(0, 50)}</TableCell>
                             <TableCell>
@@ -70,11 +76,15 @@ const ShukrPostPage = () => {
                             <TableCell className="text-center">{item.totalLikes}</TableCell>
                             <TableCell>{new Date(item.publishDate).toLocaleDateString()}</TableCell>
                             <TableCell className="flex gap-2 justify-center">
-                                <button className="text-sm text-white bg-primary hover:bg-secondary p-1 rounded-lg">
+                                <button onClick={() => navigation(`/shukr-post/edit/${item._id}`)} className="text-sm text-white bg-primary hover:bg-secondary p-1 rounded-lg">
                                     <EditIcon />
                                 </button>
                                 <button 
-                                    onClick={() => handleDelete(item._id)}
+                                  onClick={() => {
+                                    // handleDelete(item._id)
+                                    setSelectedId(item._id);
+                                    setIsDeleteModalOpen(true);
+                                  }}
                                     className="text-sm text-white bg-danger p-1 rounded-lg hover:bg-primary"
                                 >
                                     <DeleteIcon className="text-white"/>
@@ -101,6 +111,13 @@ const ShukrPostPage = () => {
                     </button>
                 ))}
             </div>
+            {isDeleteModalOpen && (
+                <DeleteModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleDelete}
+                />
+            )}
         </div>
     );
 };

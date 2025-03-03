@@ -73,9 +73,9 @@ export const homeContentApi = createApi({
     }),
 
     // DELETE content item
-    deleteContentItem: builder.mutation<void, { category: string; id: string }>({
-      query: ({ category, id }) => ({
-        url: `homeContent/${category}/${id}`,
+    deleteContentItem: builder.mutation<void, { id: string }>({
+      query: ({ id }) => ({
+        url: `homeContent/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['HomeContent'],

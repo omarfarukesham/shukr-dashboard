@@ -26,12 +26,10 @@ const DailyDuaEditPage = () => {
         
     };
 
-    console.log(defaultValues)
     const handleSubmit = async (data: IContent| null) => {
         if (!data) {
           return;
         }
-        console.log(data)
         await updateContentItem({  id: id as string, data });
         toast.success('Content added successfully');
         navigation('/daily-dua');

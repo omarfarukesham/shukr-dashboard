@@ -1,176 +1,198 @@
-import { useForm, SubmitHandler, Controller } from "react-hook-form";
-import { useState } from "react";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
-import { z } from 'zod';
+import { useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { IContent } from "@/type/homeContent.type";
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { AddContentFormProps, contentSchema, IContent } from '@/type/homeContent.type';
+import { UploadToCloudinary } from '@/utils/uploadCloundaryImg';
+import ReactQuill from 'react-quill';
 
-const CLOUDINARY_UPLOAD_PRESET = "ecom_preset";
-const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dbtskylxt/image/upload";
-
-const contentSchema = z.object({
-  title: z.string().min(3, 'Title must be at least 3 characters'),
-  details: z.string().min(10, 'Details must be at least 10 characters'),
-  arabicText: z.string().min(5, 'Arabic text must be at least 5 characters'),
-  ref: z.string().optional(),
-  isShowing: z.boolean(),
-  publishDate: z.string(),
-  status: z.string()
-});
-
-
-interface AddContentFormProps {
-  onSubmit: (data: IContent, imageUrl?: string) => void;
-  category?: string;
-  arabicText?: boolean;
-  arabicTextField?: boolean;
-  refField?: boolean;
-  ref?: boolean;
-  requireImage?: boolean; 
-  status?: 'published' | 'draft';
-  defaultValues?: Omit<IContent, "image">;
-}
-
-const AddContentForm = ({ onSubmit, arabicTextField = false, refField = false, defaultValues, requireImage = false }: AddContentFormProps) => {
-  const { register, handleSubmit, control, formState: { errors } } = useForm<Omit<IContent, "image">>({defaultValues, resolver: zodResolver(contentSchema)});
+const AddContentForm = ({
+  onSubmit,
+  category,
+  arabicTextField = false,
+  refField = false,
+  defaultValues,
+  requireImage = false
+}: AddContentFormProps) => {
+  // Form States
+  const { register, handleSubmit, control, formState: { errors } } = useForm<IContent>({
+    defaultValues,
+    resolver: zodResolver(contentSchema)
+  });
+  
+  // Upload States
   const [image, setImage] = useState<File | null>(null);
-  const [, setImageUrl] = useState<string | null>(null);
-  const [uploading, setUploading] = useState<boolean>(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(defaultValues?.image ?? null);
+  const [uploading, setUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Image Upload Handler
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Image Upload Process
   const uploadImage = async () => {
     if (!image) {
-      alert("Please select an image first!");
+      if (requireImage) {
+        throw new Error("Image is required");
+      }
       return null;
     }
 
     setUploading(true);
-    const formData = new FormData();
-    formData.append("file", image);
-    formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
-
     try {
-      const response = await fetch(CLOUDINARY_URL, { method: "POST", body: formData });
-      if (!response.ok) throw new Error("Upload failed");
-      const data = await response.json();
-      setImageUrl(data.secure_url);
-      return data.secure_url;
+      const imageUrl = await UploadToCloudinary(image);
+      return imageUrl;
     } catch (error) {
-      console.error("Image upload failed:", error);
-      alert("Image upload failed! Please try again.");
-      return null;
+      console.error('Image upload failed:', error);
+      throw new Error("Image upload failed");
     } finally {
       setUploading(false);
     }
   };
 
-  const handleFormSubmit: SubmitHandler<Omit<IContent, "image">> = async (data) => {
+  // Form Submit Handler
+
+  const handleFormSubmit = async (formData: IContent) => {
     setIsSubmitting(true);
     try {
-      let uploadedImageUrl = null;
-    
-      if (requireImage) {
-        uploadedImageUrl = await uploadImage();
-        if (!uploadedImageUrl && requireImage) {
-          alert("Image upload is required!");
-          return;
-        }
+      let imageUrl = defaultValues?.image || null;
+  
+      // Only attempt upload if there's a new image
+      if (image) {
+        imageUrl = await uploadImage();
+      } else if (requireImage && !imageUrl) {
+        // If image is required but no image exists or uploaded
+        throw new Error("Image is required");
       }
-
-      await onSubmit({ ...data, image: uploadedImageUrl }, uploadedImageUrl);
+      
+      await onSubmit({ 
+        ...formData, 
+        category: category as "duaOfTheDay" | "shukrInspiration" | "positiveThinking" | "jazakallahulKhair" | "shukrPosts" | "whatNew",
+        image: imageUrl 
+      });
+    } catch (error) {
+      console.error('Form submission failed:', error);
+      throw error; 
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div>
-       <form onSubmit={handleSubmit(handleFormSubmit)} className="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md space-y-6">
-    {/* Title */}
-    <div>
-      <label className="text-lg font-medium">Title</label>
-      <input {...register("title", { required: true })} placeholder="Title" className="w-full p-3 border border-gray-4 rounded-lg" />
-      {errors.title && <p className="text-danger text-sm">{errors.title.message}</p>}
+    <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-md p-6">
+      <form onSubmit={handleSubmit(handleFormSubmit)} className='space-y-6' >
+        {/* Form Fields */}
+        <div className="space-y-4">
+          {/* Title Field */}
+          <div>
+            <label className="text-lg font-medium">Title</label>
+            <input {...register("title", { required: true })} placeholder="Title" className="w-full p-3 border border-gray-4 rounded-lg" />
+            {errors.title && <p className="text-danger text-sm">{errors.title.message}</p>}
+          </div>
+
+          {/* Details Field */}
+          <div>
+            <label className="text-lg font-medium">Content</label>
+            <Controller
+              name="details"
+              control={control}
+              render={({ field }) => <ReactQuill {...field} theme="snow" className="h-60 rounded-lg p-3" />}
+            />
+            {errors.details && <p className="text-danger text-sm">{errors.details.message}</p>}
+          </div>
+
+          {/* Date Field */}
+          <div className="pt-10">
+            <label className="text-lg font-medium pr-4">Publish Date</label>
+            <Controller
+              name="publishDate"
+              control={control}
+              render={({ field }) => (
+                <DatePicker selected={new Date(field.value)} onChange={(date: Date) => field.onChange(date?.toISOString())} 
+                  className="w-full p-3 border border-gray-4 rounded-lg" />
+              )}
+            />
+            {errors.publishDate && <p className="text-danger text-sm">{errors.publishDate.message}</p>}
+          </div>
+
+          {/* Status Field */}
+          <div>
+            <label className="text-lg font-medium">Status</label>
+            <select {...register("status", { required: true })} className="w-full p-3 border border-gray-4 rounded-lg">
+              <option className="bg-primary  text-white" value="published">Published</option>
+              <option className="bg-primary  text-white" value="draft">Draft</option>
+            </select>
+            {errors.status && <p className="text-danger text-sm">{errors.status.message}</p>}
+          </div>
+
+          {/* Conditional Fields */}
+          {arabicTextField && (
+            <div>
+              <label className="text-lg font-medium">Arabic Text</label>
+              <textarea {...register("arabicText")} placeholder="Arabic Text" className="w-full p-3 border border-gray-4 rounded-lg" />
+              {errors.arabicText && <p className="text-danger text-sm">{errors.arabicText.message}</p>}
+            </div>
+          )}
+          {refField && (
+            <div>
+              <label className="text-lg font-medium">Ref</label>
+              <input {...register("ref")} placeholder="Ref" className="w-full p-3 border border-gray-4 rounded-lg" />
+              {errors.ref && <p className="text-danger text-sm">{errors.ref.message}</p>}
+            </div>
+          )}
+
+          {/* Image Upload */}
+          {requireImage && (
+              <div>
+                <label className="text-lg font-medium">Upload Image</label>
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  onChange={handleImageChange} 
+                  className="w-full p-3 border border-gray-4 rounded-lg" 
+                />
+                {uploading && <p className="text-blue-500 text-sm">Uploading...</p>}
+                {imagePreview && (
+                  <div className="relative mt-2">
+                    <img 
+                      src={imagePreview} 
+                      alt="Preview" 
+                      className="w-32 h-32 object-cover rounded-lg" 
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setImagePreview(null)}
+                      className="absolute left-0 top-0 bg-danger text-white rounded-full w-6 h-6 flex items-center justify-center"
+                    >
+                      ×
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+        </div>
+
+        {/* Submit Button */}
+        <button
+          type="submit"
+          disabled={isSubmitting || uploading}
+          className="w-full p-3 rounded bg-primary text-white disabled:opacity-50"
+        >
+          {(isSubmitting || uploading) ? 'Processing...' : 'Submit'}
+        </button>
+      </form>
     </div>
-
-    {/* status */}
-    <div>
-      <label className="text-lg font-medium">Status</label>
-      <select {...register("status", { required: true })} className="w-full p-3 border border-gray-4 rounded-lg">
-        <option value="published">Published</option>
-        <option value="draft">Draft</option>
-      </select>
-      {errors.status && <p className="text-danger text-sm">{errors.status.message}</p>}
-    </div>
-
-
-    {/* Content (Rich Text Editor) */}
-    <div>
-      <label className="text-lg font-medium">Content</label>
-      <Controller
-        name="details"
-        control={control}
-        render={({ field }) => <ReactQuill {...field} theme="snow" className="h-60 rounded-lg p-3" />}
-      />
-      {errors.details && <p className="text-danger text-sm">{errors.details.message}</p>}
-    </div>
-
-    {/* Publish Date (Date Picker) */}
-    <div className="pt-10">
-      <label className="text-lg font-medium pr-4">Publish Date</label>
-      <Controller
-        name="publishDate"
-        control={control}
-        render={({ field }) => (
-          <DatePicker selected={new Date(field.value)} onChange={(date: Date) => field.onChange(date?.toISOString())} 
-            className="w-full p-3 border border-gray-4 rounded-lg" />
-        )}
-      />
-       {errors.publishDate && <p className="text-danger text-sm">{errors.publishDate.message}</p>}
-    </div>
-
-    {/* Conditionally render image upload */}
-    {requireImage && (
-      <div>
-        <label className="text-lg font-medium">Upload Image</label>
-        <input type="file" accept="image/*" onChange={(e) => setImage(e.target.files?.[0] || null)} 
-          className="w-full p-3 border border-gray-4 rounded-lg" />
-        {uploading && <p className="text-blue-500 text-sm">Uploading...</p>}
-      </div>
-    )}
-
-    {/* Optional Fields */}
-    {arabicTextField && (
-      <div>
-        <label className="text-lg font-medium">Arabic Text</label>
-        <textarea {...register("arabicText")} placeholder="Arabic Text" className="w-full p-3 border border-gray-4 rounded-lg" />
-        {errors.arabicText && <p className="text-danger text-sm">{errors.arabicText.message}</p>}
-      </div>
-    )}
-    {refField && (
-      <div>
-        <label className="text-lg font-medium">Ref</label>
-        <input {...register("ref")} placeholder="Ref" className="w-full p-3 border border-gray-4 rounded-lg" />
-        {errors.ref && <p className="text-danger text-sm">{errors.ref.message}</p>}
-      </div>
-    )}
-
-    {/* Submit Button */}
-    <div className="flex justify-center">
-      <button 
-        type="submit" 
-        disabled={isSubmitting}
-        className="w-1/2 p-3 rounded-lg text-white bg-primary hover:bg-secondary disabled:opacity-50"
-      >
-        {isSubmitting ? 'Submitting...' : 'Submit'}
-      </button>
-    </div>
-  </form>
-    </div>
-   
   );
 };
 
