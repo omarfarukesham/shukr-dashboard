@@ -52,10 +52,19 @@ const ShukrInspirationPage = () => {
   if (error) return <p>Error fetching data</p>;
 
   // Data processing
-  const shukrInspiration = data?.data?.data?.shukrInspiration || [];
+  // const shukrInspiration = data?.data?.data?.shukrInspiration || [];
+  // const totalPages = Math.ceil(shukrInspiration.length / ITEMS_PER_PAGE);
+  // const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  // const displayedPosts = shukrInspiration.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+  const shukrInspiration = [...(data?.data?.data?.shukrInspiration || [])].sort(
+    (a, b) => new Date(b.publishDate).getTime() - new Date(a.publishDate).getTime()
+  );
   const totalPages = Math.ceil(shukrInspiration.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const displayedPosts = shukrInspiration.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+
 
   return (
     <div className="p-6">
@@ -65,7 +74,7 @@ const ShukrInspirationPage = () => {
           onClick={() => navigation("/shukr-ins/add")}
           className="bg-primary hover:bg-secondary text-white rounded text-xs py-1 px-2"
         >
-          Add Inspiration
+          Add Ins
         </button>
       </div>
 
@@ -84,13 +93,17 @@ const ShukrInspirationPage = () => {
         </TableHeader>
         <TableBody>
           {displayedPosts.map((item, index) => (
-            <TableRow key={item._id}>
+            <TableRow key={item._id} className="hover:bg-gray-3 transition duration-300">
               <TableCell className="font-medium">{index + 1}</TableCell>
               <TableCell>
-                <img src={item.image} alt={item.title} className="w-12 h-12 rounded" />
+                <img src={item.image} alt={item.title} className="w-6 h-6 rounded" />
               </TableCell>
               <TableCell className="font-medium">{item.title}</TableCell>
-              <TableCell>{item.details.slice(0, 50)}</TableCell>
+              {/* <TableCell>{item.details.slice(0, 50)}</TableCell> */}
+                <TableCell>
+                  <div dangerouslySetInnerHTML={{ __html: item.details.slice(0, 75) }} />
+                </TableCell>
+
               <TableCell>
                 <span
                   className={`px-1 py-0.5 rounded ${
