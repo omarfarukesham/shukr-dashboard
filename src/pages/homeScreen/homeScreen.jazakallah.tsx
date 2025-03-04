@@ -26,7 +26,7 @@ import { useNavigate } from "react-router";
 
 const ITEMS_PER_PAGE = 10;
 
-const PositiveThinking = () => {
+const JazakallahPage = () => {
     const navigation = useNavigate()
     const { data, error, isLoading } = useGetHomeContentQuery();
     const [deleteContentItem] = useDeleteContentItemMutation();
@@ -46,7 +46,7 @@ const PositiveThinking = () => {
   if (isLoading) return <LoadingSpinner />;
   if (error) return <p>Error fetching data</p>;
 
-  const positiveItems = data?.data?.data?.positiveThinking || [];
+  const positiveItems = data?.data?.data?.jazakallahulKhair || [];
   const totalPages = Math.ceil(positiveItems.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const displayedItems = positiveItems.slice(startIndex, startIndex + ITEMS_PER_PAGE);
@@ -54,12 +54,12 @@ const PositiveThinking = () => {
   return (
     <div className="p-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold mb-6">Positive Thinking</h1>
+        <h1 className="text-2xl font-bold mb-6">Jazakallah Card</h1>
         <button
           onClick={() => setIsAddModalOpen(true)}
           className="bg-primary hover:bg-secondary text-white rounded text-xs py-1 px-2"
         >
-          Add Positive Thought
+          Add Jazakallah Post 
         </button>
       </div>
 
@@ -96,7 +96,7 @@ const PositiveThinking = () => {
               <TableCell>{new Date(item.publishDate).toLocaleDateString()}</TableCell>
               <TableCell className="flex gap-2 justify-center">
                  <button
-                     onClick={() => navigation(`/positive-thinking/edit/${item._id}`)}
+                     onClick={() => navigation(`/jazakallah/edit/${item._id}`)}
                     className="text-sm text-white bg-primary hover:bg-secondary p-1 rounded-lg"
                     >
                     <EditIcon />
@@ -143,7 +143,7 @@ const PositiveThinking = () => {
       {isAddModalOpen && (
         <AddModalForm
           isOpen={isAddModalOpen}
-          category="positiveThinking"
+          category="jazakallahulKhair"
           onClose={() => setIsAddModalOpen(false)}
         //   onSubmit={handleSubmit}
        
@@ -153,4 +153,6 @@ const PositiveThinking = () => {
   );
 };
 
-export default PositiveThinking;
+
+
+export default JazakallahPage;

@@ -29,6 +29,9 @@ export {default as ShukrInspirationAddPage} from './homeScreen.shukrInspiration.
 
 
 export {default as PositiveThinkingPage} from './homeScreen.positiveThinking'
-export {default as PositiveThinkingAddPage} from './homeScreen.positiveThinking.add'
 export {default as PositiveThinikingEditPage} from './homeScreen.positiveThinking.edit'
+
+export {default as JazakallahPage} from './homeScreen.jazakallah'
+export {default as JazakallahEditPage} from './homeScreen.jazakallah.edit'
+
 

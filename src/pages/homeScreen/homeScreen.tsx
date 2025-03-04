@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import {  useGetHomeContentQuery } from "@/feature/homescreen/homeSlice";
+import { useGetHomeContentQuery } from "@/feature/homescreen/homeSlice";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-
 import { useNavigate } from "react-router";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
 const HomeScreenPage = () => {
   const { data, error, isLoading } = useGetHomeContentQuery();
-  const navigation =  useNavigate();
+  const navigation = useNavigate();
   if (isLoading) return <LoadingSpinner />;
   if (error) return <p>Error fetching data</p>;
   const contentData = (data as any)?.data?.data || [];
@@ -35,7 +34,7 @@ const HomeScreenPage = () => {
             >
               View All
             </button>
-)}
+          )}
         </div>
 
         <Table>
@@ -51,10 +50,14 @@ const HomeScreenPage = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {displayedItems.map((item) => (
+            {displayedItems?.map((item) => (
               <TableRow key={item._id}>
-                <TableCell className="font-medium">{item.title}</TableCell>
-                <TableCell>{item.details.slice(0, 50)}</TableCell>
+                <TableCell className="font-medium">
+                  {item.title ? item.title : 'N/A'}
+                </TableCell>
+                <TableCell>
+                  {item?.details ? item.details.slice(0, 50) + '...' : 'N/A'}
+                </TableCell>
                 <TableCell>
                   {item.image ? (
                     <img 
@@ -76,7 +79,6 @@ const HomeScreenPage = () => {
                 </TableCell>
                 <TableCell className="text-center">{item.totalLikes}</TableCell>
                 <TableCell>{new Date(item.publishDate).toLocaleDateString()}</TableCell>
-               
               </TableRow>
             ))}
           </TableBody>

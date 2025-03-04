@@ -14,11 +14,12 @@ import { useNavigate, useParams } from "react-router";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { useEffect, useState } from "react";
+import toast from 'react-hot-toast';
 
 const CLOUDINARY_UPLOAD_PRESET = "ecom_preset";
 const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dbtskylxt/image/upload";
 
-const PositiveThinkingEditPage = () => {
+const JazakallahEditPage = () => {
     const navigation = useNavigate()
     const {id} = useParams()
     const {data: PTData, isLoading, isSuccess}=  useGetContentItemQuery({ id: id as string });
@@ -77,7 +78,8 @@ const PositiveThinkingEditPage = () => {
   
         const updatedPost = { ...data, image: uploadedImageUrl };
         await updateContentItem({ id, data: updatedPost }).unwrap();
-        navigation("/positive-thinking");
+        toast.success('Post updated successfully ...')
+        navigation("/jazakallah");
       } catch (error) {
         console.error("Update Error:", error);
         alert("Failed to update post. Please try again.");
@@ -97,8 +99,8 @@ const PositiveThinkingEditPage = () => {
   return (
     <div>
       <div className="flex justify-between items-center">
-        <h1 className='text-xl font-bold'>Edit Positive Thinking</h1>
-        <button onClick={() => navigation('/positive-thinking')} className="bg-primary hover:bg-secondary text-white  rounded text-xs py-1 px-2">Back</button>
+        <h1 className='text-xl font-bold'>Edit Jazakallah Post</h1>
+        <button onClick={() => navigation('/jazakalla')} className="bg-primary hover:bg-secondary text-white  rounded text-xs py-1 px-2">Back</button>
       </div>
       <form onSubmit={handleSubmit(onSubmit)} className="max-w-3xl mx-auto space-y-6 bg-white p-5 rounded-lg">
         <div className="">
@@ -145,4 +147,5 @@ const PositiveThinkingEditPage = () => {
   );
 };
 
-export default PositiveThinkingEditPage;
+
+export default JazakallahEditPage;

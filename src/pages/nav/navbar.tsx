@@ -77,6 +77,9 @@ const Navbar = () => {
                       <Link to="/shukr-ins" className={`flex items-center p-2 rounded-md ${isActiveRoute('/shukr-ins') ? 'bg-secondary text-white' : 'hover:bg-secondary'}`}>
                         <span className="text-base-1">Shukr Ins</span>
                       </Link>
+                      <Link to="/jazakallah" className={`flex items-center p-2 rounded-md ${isActiveRoute('/shukr-ins') ? 'bg-secondary text-white' : 'hover:bg-secondary'}`}>
+                        <span className="text-base-1">Jazakallah</span>
+                      </Link>
                       <Link to="/nature-beauty" className={`flex items-center p-2 rounded-md ${isActiveRoute('/nature-beauty') ? 'bg-secondary text-white' : 'hover:bg-secondary'}`}>
                         <span className="text-base-1">Nature Beauty</span>
                       </Link>

@@ -5,11 +5,12 @@ import {
   DailyDuaPage,
   DailyDuaPageAdd,
   HomeScreenPage, 
+  JazakallahEditPage, 
+  JazakallahPage, 
   NatureImagePage, 
   NatureImgAddPage, 
   NatureImgEditPage, 
   PositiveThinikingEditPage, 
-  PositiveThinkingAddPage, 
   PositiveThinkingPage, 
   ShukrInspirationAddPage, 
   ShukrInspirationEditPage, 
@@ -20,22 +21,7 @@ import {
   StickyNoteAddPage, 
   StickyNoteEditPage, 
   StickyNotePage } from "@/pages/homeScreen";
-// import DailyDuaEditPage from "@/pages/homeScreen/homeScreen.dua.edit";
-// import DailyDuaAdd from "@/pages/homeScreen/homeScreen.dua.add";
-// import DailyDuaEditPage from "@/pages/homeScreen/homeScreen.dua.edit";
-// import NatureImgAddPage from "@/pages/homeScreen/homeScreen.natureImg.add";
-// import NatureImgEditPage from "@/pages/homeScreen/homeScreen.natureImg.edit";
-// import PositiveThinkingAddPage from "@/pages/homeScreen/homeScreen.positiveThinking.add";
-// import PositiveThinikingEditPage from "@/pages/homeScreen/homeScreen.positiveThinking.edit";
-// import ShukrInspirationAddPage from "@/pages/homeScreen/homeScreen.shukrInspiration.add";
-// import ShukrInspirationEditPage from "@/pages/homeScreen/homeScreen.shukrInspiration.edit";
-// import ShukrPostAddPage from "@/pages/homeScreen/homeScreen.shukrPost.add";
-// import ShukrPostEditPage from "@/pages/homeScreen/homeScreen.shukrPost.edit";
-// import StickyNoteAddPage from "@/pages/homeScreen/homeScreen.stickyNote.add";
-// import StickyNoteEditPage from "@/pages/homeScreen/homeScreen.stickyNote.edit";
-
 import Login from "@/pages/Login";
-// import ProductAdd from "@/pages/product/Product.add";
 import ProductEdit from "@/pages/product/Product.edit";
 import { AdminRoute, PrivateRoute } from "@/utils/PrivateRoute";
 import { createBrowserRouter } from 'react-router-dom';
@@ -139,10 +125,7 @@ const routes = createBrowserRouter([
         path: '/positive-thinking',
         element: <PositiveThinkingPage />
       },
-      {
-        path: '/positive-thinking/add',
-        element: <PositiveThinkingAddPage />
-      },
+    
       {
         path: '/positive-thinking/edit/:id',
         element: <PositiveThinikingEditPage />
@@ -158,6 +141,14 @@ const routes = createBrowserRouter([
       {
         path: '/sticky-notes/edit/:id',
         element: <StickyNoteEditPage />
+      },
+      {
+        path: '/jazakallah',
+        element: <JazakallahPage />
+      },
+      {
+        path: '/jazakallah/edit/:id',
+        element: <JazakallahEditPage />
       },
       {
         path: '/user',
