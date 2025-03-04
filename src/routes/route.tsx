@@ -1,5 +1,17 @@
 import App from "@/App";
 import { Home, Users } from "@/pages";
+import { 
+  ChallengeAddPage, 
+  ChallengeEditPage, 
+  ChallengePage, 
+  ChallengeViewPage, 
+  ExploreScreenPage, 
+  TemplateAddPage, 
+  TemplateEditPage, 
+  TemplatePage,
+  TemplateViewPage} from "@/pages/exploreScreen";
+import Ghost from "@/pages/Ghost";
+
 import {
   DailyDuaEditPage,
   DailyDuaPage,
@@ -151,8 +163,48 @@ const routes = createBrowserRouter([
         element: <JazakallahEditPage />
       },
       {
+        path: '/explore',
+        element: <ExploreScreenPage />
+      },
+      {
+        path: '/challenge',
+        element: <ChallengePage />
+      },
+      {
+        path: '/challenge/add',
+        element: <ChallengeAddPage />
+      },
+      {
+        path: '/challenge/view/:id',
+        element: <ChallengeViewPage />
+      },
+      {
+        path: '/challenge/edit/:id',
+        element: <ChallengeEditPage />
+      },
+      {
+        path: '/template',
+        element: <TemplatePage />
+      },
+      {
+        path: '/template/add',
+        element: <TemplateAddPage />
+      },
+      {
+        path: '/template/edit/:id',
+        element: <TemplateEditPage />
+      },
+      {
+        path: '/template/view/:id',
+        element: <TemplateViewPage />
+      },
+      {
         path: '/user',
         element: <Users />
+      },
+      {
+        path: '/ghost',
+        element: <Ghost />
       }
     ]
   },
