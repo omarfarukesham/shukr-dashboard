@@ -190,7 +190,6 @@ const AddContentForm = ({
           className="w-full p-3 rounded bg-primary text-white disabled:opacity-50"
         >
           {(isSubmitting || uploading) ? 'Processing...' : 'Submit'}
-          Submit
         </button>
       </form>
     </div>
