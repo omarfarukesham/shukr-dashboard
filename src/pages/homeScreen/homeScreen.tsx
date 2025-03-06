@@ -17,7 +17,19 @@ const HomeScreenPage = () => {
     const totalItems = items.length;
     const displayedItems = items.slice(0, 2);
     const hasMore = totalItems > 2;
-
+    
+    const categoryToRoute: Record<string, string> = {
+      'shukrInspiration': '/shukr-ins',
+      'positiveThinking': '/positive-thinking', 
+      'jazakallahulKhair': '/jazakallah',
+      'shukrPosts': '/shukr-post',
+      'duaOfTheDay': '/daily-dua',
+      'natureImg': '/nature-beauty',
+      'whatNew': '/sticky-notes',
+    };
+    
+    const route = categoryToRoute[category] || `/${category}`;
+    
     return (
       <div className="mb-8">
         <div className="flex justify-between items-center mb-4">
@@ -29,7 +41,7 @@ const HomeScreenPage = () => {
           </h2>
           {hasMore && (
             <button 
-              onClick={() => navigation('/shukr-post')} 
+              onClick={() => navigation(route)}
               className="text-sm text-white bg-primary hover:bg-secondary px-2 py-0.5 rounded-lg"
             >
               View All
@@ -40,6 +52,7 @@ const HomeScreenPage = () => {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>SL</TableHead>
               <TableHead>Title</TableHead>
               <TableHead>Details</TableHead>
               <TableHead>Image</TableHead>
@@ -50,8 +63,11 @@ const HomeScreenPage = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {displayedItems?.map((item) => (
+            {displayedItems?.map((item, index) => (
               <TableRow key={item._id}>
+                <TableCell className="font-medium">
+                  {index + 1}
+                </TableCell>
                 <TableCell className="font-medium">
                   {item.title ? item.title : 'N/A'}
                 </TableCell>

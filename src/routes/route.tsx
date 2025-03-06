@@ -20,7 +20,6 @@ import {
   JazakallahEditPage, 
   JazakallahPage, 
   NatureImagePage, 
-  NatureImgAddPage, 
   NatureImgEditPage, 
   PositiveThinikingEditPage, 
   PositiveThinkingPage, 
@@ -125,10 +124,7 @@ const routes = createBrowserRouter([
         path: '/nature-beauty',
         element: <NatureImagePage />
       },
-      {
-        path: '/nature-beauty/add',
-        element: <NatureImgAddPage />
-      },
+    
       {
         path: '/nature-beauty/edit/:id',
         element: <NatureImgEditPage />
