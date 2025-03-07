@@ -2,7 +2,6 @@ interface Guide {
     guideDetails: string;
     guideImageUrl: string;
     guideVideoUrl: string;
-    _id: string;
   }
   
   export interface Template {

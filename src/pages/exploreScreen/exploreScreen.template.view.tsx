@@ -49,8 +49,8 @@ const template = template1?.data
       </div>
   
     <div className="p-6 max-w-7xl bg-white mx-auto rounded-lg">
-        
-      <h1 className="text-3xl font-bold text-start mb-8">Title: {template.title}</h1>
+   
+      <h1 className="text-xl font-bold text-start mb-8">Title: {template.title}</h1>
 
       {/* Template Image */}
       <div className="flex justify-start mb-8">

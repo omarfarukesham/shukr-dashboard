@@ -1,6 +1,5 @@
-
 import { useState, useEffect } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // Quill styles
@@ -8,27 +7,29 @@ import { useGetTemplateByIdQuery, useUpdateTemplateMutation } from "@/feature/ex
 import toast from "react-hot-toast";
 import { UploadToCloudinary } from "@/utils/uploadCloundaryImg";
 import { ArrowBigLeft } from "lucide-react";
-// import { UploadToCloudinary } from "@/path/to/UploadToCloudinary"; // Adjust the import path
 
-// Define the form data type
+interface TemplateGuide {
+  guideDetails: string;
+  guideImageUrl: string;
+  guideVideoUrl: string;
+}
+
 interface TemplateFormData {
   title: string;
   templateImageUrl: string;
   templateDetails: string;
   category: string;
-  templateGuide: Array<{
-    guideDetails: string;
-    guideImageUrl: string;
-    guideVideoUrl: string;
-  }>;
+  templateGuide: TemplateGuide[];
 }
 
 const TemplateEditPage = () => {
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>(); // Get the template ID from the URL
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [updateTemplate] = useUpdateTemplateMutation();
+  const { data: template1, isLoading } = useGetTemplateByIdQuery({id: id as string});
 
   const {
     control,
@@ -38,34 +39,26 @@ const TemplateEditPage = () => {
     formState: { errors },
   } = useForm<TemplateFormData>();
 
-  // Fetch existing template data
-  const { data: template1, isLoading, isError } = useGetTemplateByIdQuery({ id: id as string });
-  const [updateTemplate] = useUpdateTemplateMutation();
+  const { fields, append } = useFieldArray({
+    control,
+    name: "templateGuide",
+  });
 
-  // State for template guide inputs
-  const [templateGuides, setTemplateGuides] = useState<
-    Array<{ guideDetails: string; guideImageUrl: string; guideVideoUrl: string; _id: string }>
-  >([]);
+  const template = template1?.data;
 
-  const template = template1?.data
-  // Populate form fields with fetched data
   useEffect(() => {
     if (template) {
       setValue("title", template.title);
       setValue("templateImageUrl", template.templateImageUrl);
       setValue("templateDetails", template.templateDetails);
       setValue("category", template.category);
-      setTemplateGuides(template.templateGuide);
-      setImagePreview(template.templateImageUrl); // Set image preview
+      setImagePreview(template.templateImageUrl);
+      template.templateGuide.forEach((guide: TemplateGuide) => {
+        append(guide);
+      });
     }
-  }, [template, setValue]);
+  }, [template, setValue, append]);
 
-  // Handler for adding a new guide
-  const handleAddGuide = () => {
-    setTemplateGuides([...templateGuides, { guideDetails: "", guideImageUrl: "", guideVideoUrl: "", _id: "" }]);
-  };
-
-  // Handler for file input change
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -74,22 +67,25 @@ const TemplateEditPage = () => {
     }
   };
 
-  // Handler for submitting the form
   const onSubmit = async (data: TemplateFormData) => {
     setIsSubmitting(true);
     try {
-      let imageUrl = data.templateImageUrl; // Use existing URL by default
+      let imageUrl = data.templateImageUrl;
       if (selectedFile) {
-        imageUrl = await UploadToCloudinary(selectedFile); // Upload new image
+        imageUrl = await UploadToCloudinary(selectedFile);
       }
 
-      const updatedTemplateData = {
+      const templateData = {
         ...data,
         templateImageUrl: imageUrl,
-        templateGuide: templateGuides,
+        templateGuide: data.templateGuide.map((guide) => ({
+          guideDetails: guide.guideDetails,
+          guideImageUrl: guide.guideImageUrl,
+          guideVideoUrl: guide.guideVideoUrl,
+        })),
       };
 
-      await updateTemplate({ id: id!, data: updatedTemplateData }).unwrap();
+      await updateTemplate({ id: id as string, data: templateData }).unwrap();
       toast.success("Template updated successfully");
       navigate("/template");
     } catch (error) {
@@ -103,13 +99,15 @@ const TemplateEditPage = () => {
   };
 
   if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>Error fetching template data</div>;
 
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-xl font-bold">Edit Template</h1>
-        <button onClick={() => navigate("/template")} className="bg-primary hover:bg-secondary text-white rounded text-xs py-1 px-1 flex items-center">
+        <button
+          onClick={() => navigate("/template")}
+          className="bg-primary hover:bg-secondary text-white rounded text-xs py-1 px-1 flex items-center"
+        >
           <ArrowBigLeft className="w-4 h-4 mr-1" />
           Back
         </button>
@@ -182,57 +180,55 @@ const TemplateEditPage = () => {
 
         {/* Template Guides Section */}
         <div>
-          <label className="block text-sm font-medium mb-1">Template Guides</label>
-          {templateGuides?.map((guide, index) => (
-            <div key={index} className="space-y-4 mb-4 p-4 border rounded">
-              <div>
-                <label className="block text-sm font-medium mb-1">Guide Details</label>
+          <label className="block text-sm font-medium mb-1">Template Guides (optional)</label>
+          {fields?.map((field, index) => (
+            <div key={field.id} className="mb-4 p-4 border rounded">
+              <div className="mb-2">
+                <label className="block text-xs font-medium mb-1">
+                  Guide Details
+                </label>
                 <input
-                  value={guide.guideDetails}
-                  onChange={(e) => {
-                    const newGuides = [...templateGuides];
-                    newGuides[index].guideDetails = e.target.value;
-                    setTemplateGuides(newGuides);
-                  }}
-                  className="w-full p-2 border border-gray-2 rounded"
+                  {...register(`templateGuide.${index}.guideDetails` as const)}
                   placeholder="Enter guide details"
+                  className="w-full p-2 border rounded"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Guide Image URL</label>
+              <div className="mb-2">
+                <label className="block text-xs font-medium mb-1">
+                  Guide Image URL
+                </label>
                 <input
-                  value={guide.guideImageUrl}
-                  onChange={(e) => {
-                    const newGuides = [...templateGuides];
-                    newGuides[index].guideImageUrl = e.target.value;
-                    setTemplateGuides(newGuides);
-                  }}
-                  className="w-full p-2 border border-gray-2 rounded"
+                  {...register(`templateGuide.${index}.guideImageUrl` as const)}
                   placeholder="Enter guide image URL"
+                  className="w-full p-2 border rounded"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Guide Video URL</label>
+                <label className="block text-xs font-medium mb-1">
+                  Guide Video URL
+                </label>
                 <input
-                  value={guide.guideVideoUrl}
-                  onChange={(e) => {
-                    const newGuides = [...templateGuides];
-                    newGuides[index].guideVideoUrl = e.target.value;
-                    setTemplateGuides(newGuides);
-                  }}
-                  className="w-full p-2 border border-gray-2 rounded"
+                  {...register(`templateGuide.${index}.guideVideoUrl` as const)}
                   placeholder="Enter guide video URL"
+                  className="w-full p-2 border rounded"
                 />
               </div>
+              {/* <button
+                type="button"
+                onClick={() => remove(index)}
+                className="mt-2 text-sm bg-primary-3 text-danger hover:text-danger"
+              >
+                Remove Guide
+              </button> */}
             </div>
           ))}
-          <button
+          {/* <button
             type="button"
-            onClick={handleAddGuide}
-            className="bg-primary text-white px-2 py-1 text-xs rounded hover:bg-secondary"
+            onClick={() => append({ guideDetails: "", guideImageUrl: "", guideVideoUrl: "" })}
+            className="mt-2 text-sm text-blue-500 hover:text-blue-700"
           >
             Add Guide
-          </button>
+          </button> */}
         </div>
 
         {/* Submit Button */}
@@ -242,7 +238,7 @@ const TemplateEditPage = () => {
             className="bg-primary text-white px-4 py-2 rounded hover:bg-secondary"
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Updating ...' : 'Update Template'}
+            {isSubmitting ? 'Processing ...' : 'Update Template'}
           </button>
         </div>
       </form>

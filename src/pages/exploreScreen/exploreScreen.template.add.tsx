@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // Quill styles
@@ -8,25 +8,27 @@ import toast from "react-hot-toast";
 import { UploadToCloudinary } from "@/utils/uploadCloundaryImg";
 import { ArrowBigLeft } from "lucide-react";
 // import { UploadToCloudinary } from "@/path/to/UploadToCloudinary"; // Adjust the import path
+interface TemplateGuide {
+  guideDetails: string;
+  guideImageUrl: string;
+  guideVideoUrl: string;
+}
 
-// Define the form data type
 interface TemplateFormData {
   title: string;
   templateImageUrl: string;
   templateDetails: string;
   category: string;
-  templateGuide: Array<{
-    guideDetails: string;
-    guideImageUrl: string;
-    guideVideoUrl: string;
-  }>;
+  templateGuide: TemplateGuide[];
 }
+
 
 const TemplateAddPage = () => {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [addTemplate] = useAddTemplateMutation();
 
   const {
     control,
@@ -39,21 +41,17 @@ const TemplateAddPage = () => {
       templateImageUrl: "",
       templateDetails: "",
       category: "",
-      templateGuide: [],
+      // Pre-populate with one empty guide.
+      templateGuide: [
+        { guideDetails: "", guideImageUrl: "", guideVideoUrl: "" }
+      ],
     },
   });
 
-  const [addTemplate] = useAddTemplateMutation();
-
-  // State for template guide inputs
-  const [templateGuides, setTemplateGuides] = useState<
-    Array<{ guideDetails: string; guideImageUrl: string; guideVideoUrl: string; _id: string }>
-  >([]);
-
-  // Handler for adding a new guide
-  const handleAddGuide = () => {
-    setTemplateGuides([...templateGuides, { guideDetails: "", guideImageUrl: "", guideVideoUrl: "", _id: "" }]);
-  };
+  const { fields } = useFieldArray({
+    control,
+    name: "templateGuide",
+  });
 
   // Handler for file input change
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,14 +70,18 @@ const TemplateAddPage = () => {
       if (selectedFile) {
         imageUrl = await UploadToCloudinary(selectedFile);
       }
-
+      
       const templateData = {
         ...data,
         templateImageUrl: imageUrl,
-        templateGuide: templateGuides,
+        templateGuide: data.templateGuide.map((guide) => ({
+          guideDetails: guide.guideDetails,
+          guideImageUrl: guide.guideImageUrl,
+          guideVideoUrl: guide.guideVideoUrl,
+        })),
       };
 
-      console.log(templateData)
+      // console.log(templateData)
       await addTemplate({ data: templateData }).unwrap();
       toast.success("Template added successfully");
       navigate("/template");
@@ -173,57 +175,41 @@ const TemplateAddPage = () => {
 
         {/* Template Guides Section */}
         <div>
-          <label className="block text-sm font-medium mb-1">Template Guides</label>
-          {templateGuides.map((guide, index) => (
-            <div key={index} className="space-y-4 mb-4 p-4 border rounded">
-              <div>
-                <label className="block text-sm font-medium mb-1">Guide Details</label>
+          <label className="block text-sm font-medium mb-1">Template Guides (optional)</label>
+          {fields.map((field, index) => (
+            <div key={field.id} className="mb-4 p-4 border rounded">
+              <div className="mb-2">
+                <label className="block text-xs font-medium mb-1">
+                  Guide Details
+                </label>
                 <input
-                  value={guide.guideDetails}
-                  onChange={(e) => {
-                    const newGuides = [...templateGuides];
-                    newGuides[index].guideDetails = e.target.value;
-                    setTemplateGuides(newGuides);
-                  }}
-                  className="w-full p-2 border border-gray-2 rounded"
+                  {...register(`templateGuide.${index}.guideDetails` as const)}
                   placeholder="Enter guide details"
+                  className="w-full p-2 border rounded"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium mb-1">Guide Image URL</label>
+              <div className="mb-2">
+                <label className="block text-xs font-medium mb-1">
+                  Guide Image URL
+                </label>
                 <input
-                  value={guide.guideImageUrl}
-                  onChange={(e) => {
-                    const newGuides = [...templateGuides];
-                    newGuides[index].guideImageUrl = e.target.value;
-                    setTemplateGuides(newGuides);
-                  }}
-                  className="w-full p-2 border border-gray-2 rounded"
+                  {...register(`templateGuide.${index}.guideImageUrl` as const)}
                   placeholder="Enter guide image URL"
+                  className="w-full p-2 border rounded"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Guide Video URL</label>
+                <label className="block text-xs font-medium mb-1">
+                  Guide Video URL
+                </label>
                 <input
-                  value={guide.guideVideoUrl}
-                  onChange={(e) => {
-                    const newGuides = [...templateGuides];
-                    newGuides[index].guideVideoUrl = e.target.value;
-                    setTemplateGuides(newGuides);
-                  }}
-                  className="w-full p-2 border border-gray-2 rounded"
+                  {...register(`templateGuide.${index}.guideVideoUrl` as const)}
                   placeholder="Enter guide video URL"
+                  className="w-full p-2 border rounded"
                 />
               </div>
             </div>
           ))}
-          <button
-            type="button"
-            onClick={handleAddGuide}
-            className="bg-primary text-white px-2 py-1 text-xs rounded hover:bg-secondary"
-          >
-            Add Guide
-          </button>
         </div>
 
         {/* Submit Button */}
