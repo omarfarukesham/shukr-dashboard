@@ -5,6 +5,7 @@ interface Guide {
   }
   
   export interface Template {
+   
     [x: string]: any;
     _id: string;
     title: string;
