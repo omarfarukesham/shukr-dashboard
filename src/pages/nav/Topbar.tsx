@@ -1,28 +1,26 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from "@/store/store";
 import { toggle } from "@/feature/toggle/toggleSlice";
+import { RootState } from "@/store/store";
+import { useState } from "react";
+import { toast } from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import avatar from "../../assets/images/avatar.png";
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-hot-toast';
 
 const Topbar = () => {
   const dispatch = useDispatch();
   const isSidebarOpen = useSelector((state: RootState) => state.toggle.value);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navigate = useNavigate();
-  const role = localStorage.getItem('role');
+  const role = localStorage.getItem("role");
   const toggleSidebar = () => {
     dispatch(toggle());
   };
 
- 
-
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('role');
-    toast.success('Logged out successfully');
-    navigate('/login');
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    toast.success("Logged out successfully");
+    navigate("/login");
   };
 
   return (
@@ -53,9 +51,16 @@ const Topbar = () => {
 
       <div className="flex items-center gap-5">
         <p>{role?.toLocaleUpperCase()}</p>
-        <button className="p-1 bg-gray-3 rounded-full"  onClick={() => setShowLogoutModal(true)}>
-          <img src={avatar} alt="User Avatar" className="w-6 h-6 rounded-full" />
-        </button>    
+        <button
+          className="p-1 bg-gray-3 rounded-full"
+          onClick={() => setShowLogoutModal(true)}
+        >
+          <img
+            src={avatar}
+            alt="User Avatar"
+            className="w-6 h-6 rounded-full"
+          />
+        </button>
       </div>
 
       {/* Logout Modal */}
@@ -88,4 +93,3 @@ const Topbar = () => {
 };
 
 export default Topbar;
-
