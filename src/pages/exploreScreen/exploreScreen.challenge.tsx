@@ -16,12 +16,9 @@ import DeleteModal from "@/components/modal/deleteModal";
 // Icons
 import EditIcon from "@/assets/icons/EditIcon";
 import DeleteIcon from "@/assets/icons/DeleteIcon";
-
+import { EyeIcon } from "lucide-react";
 
 // API
-
-// import { Template } from "@/type/templateContent.type";
-import { EyeIcon } from "lucide-react";
 import { useDeleteChallengeMutation, useGetChallengesQuery } from "@/feature/exploreScreen/exploreChallengSlice";
 import { IChallenge } from "@/type/challengeContent.type";
 
@@ -30,7 +27,7 @@ const ITEMS_PER_PAGE = 10;
 
 const ChallengePage = () => {
   // API hooks
-  const { data:CHData, error, isLoading } = useGetChallengesQuery();
+  const { data: CHData, error, isLoading } = useGetChallengesQuery();
   const [deleteChallenge] = useDeleteChallengeMutation();
 
   // Navigation
@@ -45,7 +42,6 @@ const ChallengePage = () => {
 
   // Handlers
   const handleDelete = async () => {
-    console.log(selectedId)
     if (!selectedId) return;
     await deleteChallenge({ id: selectedId }).unwrap();
     setIsDeleteModalOpen(false);
@@ -57,12 +53,16 @@ const ChallengePage = () => {
 
   // Data processing
   const challenges = (CHData as unknown as { data: IChallenge[] }).data || [];
-  const totalPages = Math.ceil(challenges.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const displayedChallenges = challenges.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-  const sortedChallenges = [...displayedChallenges].sort((a, b) => {
+
+  // Sort challenges by createdAt in descending order (newest first)
+  const sortedChallenges = [...challenges].sort((a, b) => {
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
+
+  // Pagination logic
+  const totalPages = Math.ceil(sortedChallenges.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const displayedChallenges = sortedChallenges.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   return (
     <div className="p-6">
@@ -81,42 +81,33 @@ const ChallengePage = () => {
           <TableRow>
             <TableHead>SL</TableHead>
             <TableHead>Title</TableHead>
-            <TableHead>Image</TableHead>
             <TableHead>Details</TableHead>
             <TableHead>Category</TableHead>
-            <TableHead>Duration</TableHead>
-            <TableHead>Visibility</TableHead>
-            <TableHead>Streak</TableHead>
+            <TableHead>Total Challenge</TableHead>
+            <TableHead>Templates</TableHead>
+            <TableHead>Type</TableHead>
             <TableHead className="text-center">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {sortedChallenges.map((challenge, index) => (
+          {displayedChallenges.map((challenge, index) => (
             <TableRow key={challenge._id} className="hover:bg-gray-3">
-              <TableCell className="font-medium">{index + 1}</TableCell>
+              <TableCell className="font-medium">{startIndex + index + 1}</TableCell>
               <TableCell className="font-medium">{challenge.name}</TableCell>
               <TableCell>
-                <img
-                  src={challenge.image}
-                  alt={challenge.name}
-                  className="w-8 h-8 object-fit rounded"
-                />
+                <div dangerouslySetInnerHTML={{ __html: challenge.description.slice(0, 50) }} />
+                ...
               </TableCell>
-              <TableCell>
-              <div dangerouslySetInnerHTML={{ __html: challenge.description.slice(0, 50) }} /> 
-                ...</TableCell>
               <TableCell>{challenge.category}</TableCell>
-           
-    
               <TableCell>{challenge.duration}</TableCell>
+              <TableCell>{challenge.templateId.length}</TableCell>
               <TableCell>{challenge.visibility}</TableCell>
-              <TableCell>{challenge.streak}</TableCell>
               <TableCell className="flex gap-2 justify-center">
                 <button
                   onClick={() => navigation(`/challenge/view/${challenge._id}`)}
                   className="text-sm text-white bg-primary hover:bg-secondary p-1 rounded-lg"
                 >
-                  <EyeIcon size={14}/>
+                  <EyeIcon size={14} />
                 </button>
                 <button
                   onClick={() => navigation(`/challenge/edit/${challenge._id}`)}
@@ -168,5 +159,4 @@ const ChallengePage = () => {
   );
 };
 
-
-export default ChallengePage
+export default ChallengePage;
