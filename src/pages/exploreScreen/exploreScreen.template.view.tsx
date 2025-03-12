@@ -1,118 +1,149 @@
-
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import { useGetTemplateByIdQuery } from "@/feature/exploreScreen/exploreSlice";
-import { toast } from "react-hot-toast";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { ArrowBigLeft } from "lucide-react";
+import toast from "react-hot-toast";
+import { ClipboardCopy } from "lucide-react";
 
 const TemplateViewPage = () => {
-  const { id } = useParams<{ id: string }>(); 
-  const navigation = useNavigate()
+  const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  const { data: templateData1, isLoading } = useGetTemplateByIdQuery({id: id as string});
 
-  // Fetch template data
-  const {
-    data: template1,
-    isLoading,
-    isError,
-  } = useGetTemplateByIdQuery({id: id as string});
+  const templateData = templateData1?.data as any;
 
-const template = template1?.data
-
-  // Handle loading and error states
   useEffect(() => {
-    if (isError) {
-      toast.error("Failed to fetch template data");
+    if (!templateData && !isLoading) {
+      toast.error("Template not found");
+      navigate("/template");
     }
-  }, [isError]);
+  }, [templateData, isLoading, navigate]);
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <LoadingSpinner />
-      </div>
-    );
+    return <p>Loading...</p>;
   }
 
-  if (!template) {
-    return <div className="text-center py-10">Template not found</div>;
-  }
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success("Copied to clipboard");
+  };
 
   return (
-    <>
-  <div className="flex justify-between items-center mb-6">
-        <h1 className="text-xl font-bold">View Template</h1>
-        <button onClick={() => navigation("/template")} className="bg-primary hover:bg-secondary text-white rounded text-xs py-1 px-1 flex items-center">
+    <div className="p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-xl font-bold">Template Details</h1>
+        <button
+          onClick={() => navigate("/template")}
+          className="bg-primary hover:bg-secondary text-white rounded text-xs py-1 px-1 flex items-center"
+        >
           <ArrowBigLeft className="w-4 h-4 mr-1" />
           Back
         </button>
       </div>
-  
-    <div className="p-6 max-w-7xl bg-white mx-auto rounded-lg">
-   
-      <h1 className="text-xl font-bold text-start mb-8">Title: {template.title}</h1>
 
-      {/* Template Image */}
-      <div className="flex justify-start mb-8">
-        <span className="text-lg font-bold mx-2">Image: </span>
-        <img
-          src={template.templateImageUrl}
-          alt={template.title}
-          className="rounded-lg shadow-lg w-[250px] max-w-xl h-auto"
-        />
-      </div>
-
-      {/* Template Details */}
-      <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-        <h2 className="text-xl font-semibold mb-4">Template Details</h2>
-        <div
-          className="prose max-w-none"
-          dangerouslySetInnerHTML={{ __html: template.templateDetails }}
-        />
-      </div>
-
-      {/* Category */}
-      <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-        <h2 className="text-xl font-semibold mb-4">Category</h2>
-        <p className="text-gray-7">{template.category}</p>
-      </div>
-
-      {/* Template Guides */}
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <h2 className="text-xl font-semibold mb-4">Template Guides</h2>
-        {template.templateGuide.map((guide, index) => (
-          <div key={index} className="mb-6 p-4 border rounded-lg">
-            <h3 className="text-lg font-medium mb-2">Guide {index + 1}</h3>
-            <p className="text-gray-700 mb-2">{guide.guideDetails}</p>
-            {guide.guideImageUrl && (
-              <div className="mb-2">
-                <img
-                  src={guide.guideImageUrl}
-                  alt={`Guide ${index + 1} Image`}
-                  className="rounded-lg w-full max-w-md h-auto"
-                />
-              </div>
-            )}
-            {guide.guideVideoUrl && (
-              <div className="mb-2">
-                <a
-                  href={guide.guideVideoUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-500 hover:underline"
-                >
-                  Watch Video Guide
-                </a>
-              </div>
-            )}
+      <div className="space-y-6 bg-white rounded-lg shadow-lg p-6">
+        {/* Title Section */}
+        <div>
+          <label className="block text-sm font-medium mb-1">Title</label>
+          <div className="w-full p-2 border border-gray-2 rounded bg-gray-50">
+            {templateData?.title}
           </div>
-        ))}
+        </div>
+
+        {/* Category Section */}
+        <div>
+          <label className="block text-sm font-medium mb-1">Category</label>
+          <div className="w-full p-2 border border-gray-2 rounded bg-gray-50">
+            {templateData?.category}
+          </div>
+        </div>
+
+        {/* Template Image Section */}
+        <div>
+          <label className="block text-sm font-medium mb-1">Template Image</label>
+          {templateData?.templateImageUrl && (
+            <div className="mt-2">
+              <img
+                src={templateData.templateImageUrl}
+                alt="Template Preview"
+                className="w-32 h-32 object-cover rounded"
+              />
+              <div className="mt-2 flex items-end gap-2">
+                <p className="text-sm text-white bg-gray-800 p-2 rounded">
+                  ![image]({templateData.templateImageUrl})
+                </p>
+                <button
+                  type="button"
+                  onClick={() => handleCopy(`![image](${templateData.templateImageUrl})`)}
+                  className="text-sm text-primary bg-primary-200 p-2 rounded hover:underline flex items-center"
+                >
+                  <ClipboardCopy className="w-4 h-4 mr-1" />
+                  Copy Image Format
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+      
+
+        {/* Template Data Section */}
+        <div>
+          <label className="block text-sm font-medium mb-1">Template Data</label>
+          <div className="space-y-2">
+            {templateData?.templateData?.map((block, index) => (
+              <div key={index} className="  rounded bg-white shadow mb-5">
+                {block.type === "description" && (
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Description</label>
+                    <ReactQuill
+                      theme="snow"
+                      value={block.content}
+                      readOnly
+                      className="h-60 rounded-lg bg-gray-50"
+                    />
+                  </div>
+                )}
+               <div className="pt-5">
+               {block.type === "question" && (
+                  <div className="">
+                    <label className="block text-sm font-bold mb-1 ">Question {index + 1}</label>
+                    <div className="w-full p-2 border border-gray-2 rounded bg-gray-50">
+                      {block.content}
+                    </div>
+                  </div>
+                )}
+                {block.type === "textbox" && (
+                  <div>
+                    <label className="block text-sm font-medium mb-1">User Input Field</label>
+                    <div className="w-full p-2 border border-gray-2 rounded bg-gray-50">
+                      [User Input Field]
+                    </div>
+                  </div>
+                )}
+               </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+
+          {/* Template Guide Section */}
+          <div>
+          <label className="block text-sm font-medium mb-1">Template Guide</label>
+          <div className="w-full p-2 border border-gray-2 rounded bg-gray-50">
+            <div
+              // value={templateData?.templateGuide || ""}
+              dangerouslySetInnerHTML={{ __html: templateData.templateGuide }}
+              className="h-40 rounded-lg bg-gray-50"
+            />
+          </div>
+        </div>
       </div>
     </div>
-
-    </>
   );
 };
-
 
 export default TemplateViewPage;

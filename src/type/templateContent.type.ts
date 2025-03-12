@@ -1,8 +1,4 @@
-interface Guide {
-    guideDetails: string;
-    guideImageUrl: string;
-    guideVideoUrl: string;
-  }
+
   
   export interface Template {
    
@@ -11,7 +7,7 @@ interface Guide {
     title: string;
     templateImageUrl: string;
     templateDetails: string;
-    templateGuide: Guide[];
+    templateGuide: string;
     category: string;
     createdBy: string;
     updatedBy: string;

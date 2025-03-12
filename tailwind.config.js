@@ -5,7 +5,11 @@ export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   safelist: ['bg-gray-6'],
   theme: {
-    extend: {},
+    extend: {
+      animation: {
+        'spin-slow': 'spin 2s linear infinite', // Slower spin
+      },
+    },
 
     // Colors
     colors: {

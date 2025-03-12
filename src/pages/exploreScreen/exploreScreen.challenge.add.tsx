@@ -176,7 +176,7 @@ const categoriesData = (TMData as any)?.data || [];
               )}
             </div>
           )}
-          {isUploading && <p className="text-blue-500 text-sm mt-1">Uploading...</p>}
+          {isUploading && <p className="text-danger text-sm mt-1">Uploading...</p>}
         </div>
 
         {/* Description Field */}

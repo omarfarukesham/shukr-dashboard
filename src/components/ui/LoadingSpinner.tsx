@@ -8,19 +8,27 @@ interface LoadingSpinnerProps {
 
 const LoadingSpinner = ({ className, text }: LoadingSpinnerProps) => {
   return (
-    // <div className='border-2 border-dashed rounded-full w-5 h-5 animate-spin'></div>
     <div
       className={twMerge(
-        'h-screen w-full max-auto flex flex-col items-center justify-center',
+        'h-screen w-full flex flex-col items-center justify-center bg-gradient-to-b from-gray-100 to-gray-300',
         className,
       )}
     >
-      <img
-        src={loadingLogo}
-        alt='loding logo'
-        className={'animate-spin max-w-full max-h-full w-10'}
-      />
-      {text}
+      <div className="relative">
+        {/* Background pulse effect */}
+        <div className="absolute inset-0 rounded-full bg-gray-200 opacity-30 animate-ping"></div>
+        {/* Rotating logo */}
+        <img
+          src={loadingLogo}
+          alt="Loading logo"
+          className="w-14 h-14 animate-spin-slow"
+        />
+      </div>
+      {text && (
+        <span className="mt-4 text-sm text-gray-600 animate-pulse">
+          {text}
+        </span>
+      )}
     </div>
   );
 };

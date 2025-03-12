@@ -110,9 +110,9 @@ const Navbar = () => {
                   </div>
                   {openSubmenu === 'exploreScreen' && isSidebarOpen && (
                     <div className="ml-8 space-y-2">
-                      <Link to="/explore" className={`flex items-center p-2 rounded-md ${isActiveRoute('/explore') ? 'bg-secondary text-white' : 'hover:bg-secondary'}`}>
+                      {/* <Link to="/explore" className={`flex items-center p-2 rounded-md ${isActiveRoute('/explore') ? 'bg-secondary text-white' : 'hover:bg-secondary'}`}>
                         <span className="text-base-1">Explore</span>
-                      </Link>
+                      </Link> */}
                       <Link to="/challenge" className={`flex items-center p-2 rounded-md ${isActiveRoute('/challenge') ? 'bg-secondary text-white' : 'hover:bg-secondary'}`}>
                         <span className="text-base-1">Challenge</span>
                       </Link>

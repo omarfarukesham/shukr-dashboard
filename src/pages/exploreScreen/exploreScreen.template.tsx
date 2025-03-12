@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
+// import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import DeleteModal from "@/components/modal/deleteModal";
 
 // Icons
@@ -25,6 +25,7 @@ import {
    } from "@/feature/exploreScreen/exploreSlice";
 import { Template } from "@/type/templateContent.type";
 import { EyeIcon } from "lucide-react";
+import Loader from "@/components/ui/Loader";
 
 // Constants
 const ITEMS_PER_PAGE = 10;
@@ -53,7 +54,7 @@ const TemplateScreen = () => {
   };
 
   // Loading states
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <Loader />;
   if (error) return <p>Error fetching data</p>;
 
   // Data processing
@@ -80,7 +81,7 @@ const TemplateScreen = () => {
             <TableHead>SL</TableHead>
             <TableHead>Title</TableHead>
             <TableHead>Image</TableHead>
-            <TableHead>Details</TableHead>
+            {/* <TableHead>Details</TableHead> */}
             <TableHead>Category</TableHead>
             {/* <TableHead>Guides</TableHead> */}
             <TableHead>Updated At</TableHead>
@@ -99,9 +100,9 @@ const TemplateScreen = () => {
                   className="w-8 h-8 object-fit rounded"
                 />
               </TableCell>
-              <TableCell>
+              {/* <TableCell>
               <div dangerouslySetInnerHTML={{ __html: template.templateDetails.slice(0, 50) }} /> 
-                ...</TableCell>
+                ...</TableCell> */}
               {/* <div dangerouslySetInnerHTML={{ __html: item.details.slice(0, 75) }} /> */}
               <TableCell>{template.category}</TableCell>
               {/* <TableCell>
