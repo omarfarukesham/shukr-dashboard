@@ -1,32 +1,36 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css"; 
+import MDEditor from "@uiw/react-md-editor";
+import "react-quill/dist/quill.snow.css";
 import toast from "react-hot-toast";
 import { UploadToCloudinary } from "@/utils/uploadCloundaryImg";
 import { ArrowBigLeft } from "lucide-react";
 import { useUpdateChallengeMutation, useGetChallengeByIdQuery } from "@/feature/exploreScreen/exploreChallengSlice";
 import { IChallenge } from "@/type/challengeContent.type";
 import { useGetTemplatesQuery } from "@/feature/exploreScreen/exploreSlice";
+import Loader from "@/components/ui/Loader";
+
+interface Template {
+  _id: string;
+  category: string;
+}
 
 const ChallengeEditPage = () => {
-  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedTemplateIds, setSelectedTemplateIds] = useState<string[]>([]);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-
+  const [, setSelectedFile] = useState<File | null>(null);
+  const [updateChallenge] = useUpdateChallengeMutation();
+  const { data: TMData, isLoading } = useGetTemplatesQuery();
   const { data: challengeData1, isLoading: isChallengeLoading } = useGetChallengeByIdQuery({ id: id as string });
-  const [editChallenge] = useUpdateChallengeMutation();
-  const { data: TMData, isLoading: isTemplatesLoading } = useGetTemplatesQuery();
+  const [isUploading, setIsUploading] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [duration, setDuration] = useState<number | null>(null);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
-  const challengeData = (challengeData1 as any)?.data
   const {
     control,
     handleSubmit,
@@ -35,81 +39,92 @@ const ChallengeEditPage = () => {
     setValue,
   } = useForm<IChallenge>();
 
-  const categoriesData = (TMData as any)?.data || [];
-  const categories = TMData ? Array.from(new Set(categoriesData?.map(template => template.category))) : [];
+  const challengeData = (challengeData1 as any)?.data || null;
+  console.log(challengeData?.templateId);
 
   useEffect(() => {
     if (challengeData) {
-      // Set form values
       setValue("name", challengeData.name);
       setValue("description", challengeData.description);
       setValue("category", challengeData.category);
       setValue("duration", challengeData.duration);
       setValue("visibility", challengeData.visibility);
-      setValue("templateId", challengeData.templateId);
-      setImagePreview(challengeData.image);
-  
-      // Map templateIds to their corresponding categories
-      const initialCategories = challengeData.templateId
-        .map((templateId: string) => {
-          const template = categoriesData.find((t: any) => t._id === templateId);
-          return template?.category || "";
-        })
-        .filter((category: string) => category !== ""); // Remove empty categories
-  
-      // Set selected categories and templateIds
-      setSelectedCategories(initialCategories);
-      setSelectedTemplateIds(challengeData.templateId);
+      setValue("templateId", challengeData?.templateId);
+      setImagePreview(challengeData?.image);
+      setImageUrl(challengeData.image);
+      setDuration(challengeData.duration);
+      setSelectedCategories(challengeData.templateId || []);
     }
-  }, [challengeData, setValue, categoriesData]);
+  }, [challengeData, setValue]);
 
-  if (isChallengeLoading || isTemplatesLoading) {
-    return <p>Loading...</p>;
+  if (isLoading || isChallengeLoading) {
+    return <Loader />;
   }
 
-  const handleCategoryChange = (category: string) => {
-    const updatedCategories = selectedCategories.includes(category)
-      ? selectedCategories.filter(c => c !== category)
-      : [...selectedCategories, category];
-    
-    setSelectedCategories(updatedCategories);
-    
-    const templateIds = categoriesData
-      ?.filter(template => updatedCategories.includes(template.category))
-      .map(template => template._id) || [];
-    setSelectedTemplateIds(templateIds);
-    setValue('templateId', templateIds);
-  };
+  const categoriesData = (TMData as any)?.data || [];
+  const categoriesMap = categoriesData?.reduce((acc, template: Template) => {
+    if (!acc[template.category]) {
+      acc[template.category] = template._id;
+    }
+    return acc;
+  }, {} as Record<string, string>);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const categories = Object.keys(categoriesMap || {});
+
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       setSelectedFile(file);
       setImagePreview(URL.createObjectURL(file));
+
+      setIsUploading(true);
+      try {
+        const uploadedImageUrl = await UploadToCloudinary(file);
+        setImageUrl(uploadedImageUrl);
+        toast.success("Image uploaded successfully");
+      } catch (error) {
+        console.error("Image upload failed:", error);
+        toast.error("Image upload failed");
+      } finally {
+        setIsUploading(false);
+      }
+    }
+  };
+
+  const handleCopy = () => {
+    if (imageUrl) {
+      navigator.clipboard.writeText(`![image](${imageUrl})`);
+      toast.success("Image format copied to clipboard");
+    }
+  };
+
+  const handleDurationChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const durationValue = parseInt(event.target.value);
+    setDuration(durationValue);
+  };
+
+  const handleCategoryChange = (index: number, category: string) => {
+    const templateId = categoriesMap?.[category];
+    if (templateId) {
+      const updatedCategories = [...selectedCategories];
+      updatedCategories[index] = templateId;
+      setSelectedCategories(updatedCategories);
+      setValue("templateId", updatedCategories);
     }
   };
 
   const onSubmit = async (data: IChallenge) => {
     setIsSubmitting(true);
     try {
-      let imageUrl = data.image;
-      if (selectedFile) {
-        imageUrl = await UploadToCloudinary(selectedFile);
-      }
+      data.templateId = selectedCategories.filter(Boolean);
+      data.image = imageUrl || challengeData?.image || "";
 
-      const challengeData = {
-        ...data,
-        image: imageUrl,
-      };
+      await updateChallenge({ id: id || "", data }).unwrap();
 
-      await editChallenge({ id: id || "", data: challengeData }).unwrap();
       toast.success("Challenge updated successfully");
       navigate("/challenge");
     } catch (error) {
       console.error("Failed to update Challenge:", error);
-      if (error.data && error.data.error) {
-        console.error("Validation Errors:", error.data.error.errors);
-      }
     } finally {
       setIsSubmitting(false);
     }
@@ -141,37 +156,51 @@ const ChallengeEditPage = () => {
           )}
         </div>
 
-        {/* Challenge Image Upload Field */}
+        {/* Image Field */}
         <div>
-          <label className="block text-sm font-medium mb-1">Challenge Image</label>
+          <label className="block text-sm font-medium mb-1">Upload Image</label>
           <input
             type="file"
             onChange={handleFileChange}
-            className="w-full p-2 border border-gray-2 rounded"
+            className="w-full p-2 border rounded"
           />
           {imagePreview && (
             <div className="mt-2">
-              <img src={imagePreview} alt="Preview" className="w-32 h-32 object-cover rounded" />
+              <img
+                src={imagePreview}
+                alt="Preview"
+                className="w-32 h-32 object-cover rounded"
+              />
+              {imageUrl && (
+                <div className="mt-2">
+                  <p className="text-sm text-white bg-gray-8 p-2 mt-1">![image]({imageUrl})</p>
+                  <button
+                    type="button"
+                    onClick={handleCopy}
+                    className="text-sm text-primary  bg-primary-200 p-2 mt-1 hover:underline"
+                  >
+                    Copy Image Format
+                  </button>
+                </div>
+              )}
             </div>
           )}
+          {isUploading && <p className="text-danger text-sm mt-1">Uploading...</p>}
         </div>
 
-        {/* Template Details Field (React Quill Editor) */}
+        {/* Description Field */}
         <div>
           <label className="block text-sm font-medium mb-1">Challenge Details</label>
           <Controller
             name="description"
             control={control}
-            defaultValue=""
             rules={{ required: "Challenge description is required" }}
             render={({ field }) => (
               <>
-                <ReactQuill
-                  theme="snow"
+                <MDEditor
                   value={field.value}
                   onChange={field.onChange}
-                  placeholder="Enter template details"
-                  className="h-60 rounded-lg p-3"
+                  height={400}
                 />
                 {errors.description && (
                   <p className="text-danger text-sm mt-1">
@@ -185,72 +214,69 @@ const ChallengeEditPage = () => {
 
         {/* Category Field */}
         <div>
-          <label className="block text-sm font-medium mb-1 pt-10">Challenge Category</label>
+          <label className="block text-sm font-medium mb-1">Challenge Category</label>
           <input
             {...register("category", { required: "Category is required" })}
             className="w-full p-2 border border-gray-2 rounded"
             placeholder="Enter category"
           />
         </div>
+
+        {/* Visibility Field */}
+        <div>
+          <label className="block text-sm font-medium mb-1">Type</label>
+          <select
+            {...register("visibility", { required: "Visibility is required" })}
+            className="w-full p-2 border border-gray-2 rounded"
+          >
+            <option value="FREE">Free</option>
+            <option value="PRO">Premium</option>
+          </select>
+          {errors.visibility && (
+            <p className="text-danger text-sm mt-1">{errors.visibility.message}</p>
+          )}
+        </div>
+
+        {/* Duration Field */}
         <div>
           <label className="block text-sm font-medium mb-1">Challenge Duration</label>
           <input
             {...register("duration", { required: "Duration is required" })}
             className="w-full p-2 border border-gray-2 rounded"
             placeholder="Enter duration number"
-            type="number"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-1"> Challenge Streak</label>
-          <input
-            {...register("streak", { required: "Streak is required" })}
-            className="w-full p-2 border border-gray-2 rounded"
-            placeholder="Enter Streak number"
+            onChange={handleDurationChange}
             type="number"
           />
         </div>
 
-        {/* Visibility Field */}
-        <div>
-            <label className="block text-sm font-medium mb-1">Challenge Visibility</label>
-            <select
-                {...register("visibility", { required: "Visibility is required" })}
-                className="w-full p-2 border border-gray-2 rounded"
-            >
-                <option value="FREE">Free</option>
-                <option value="PRO">Premium</option>
-            </select>
-            {errors.visibility && (
-                <p className="text-danger text-sm mt-1">{errors.visibility.message}</p>
-            )}
-        </div>
+        {/* Dynamically Generated Day Fields */}
+        <div className="grid grid-cols-3 gap-4">
+          {Array.from({ length: duration || 0 }, (_, index) => {
 
-        {/* Template Category Dropdown */}
-        <div>
-            <label className="block text-sm font-medium mb-1">Select Template Category</label>
-            <div className="max-h-48 overflow-y-auto border border-gray-2 rounded p-2">
-                {categories.map((category: string) => (
-                <div key={category} className="flex items-center gap-2 p-2 hover:bg-gray-50">
-                    <input
-                    type="checkbox"
-                    id={category}
-                    checked={selectedCategories.includes(category)}
-                    onChange={() => handleCategoryChange(category)}
-                    className="w-4 h-4 rounded border-gray-300"
-                    />
-                    <label htmlFor={category} className="flex-1 cursor-pointer">
-                    {category}
-                    </label>
-                </div>
-                ))}
-            </div>
-            {selectedTemplateIds.length > 0 && (
-                <p className="text-sm text-success mt-2">
-                Selected templates: {selectedTemplateIds.length}
-                </p>
-            )}
-         </div>
+            return (
+              <div key={index}>
+                <label className="block text-sm font-medium mb-1">Day - {index + 1}</label>
+                <select
+                  required
+                  className="w-full p-2 border rounded"
+                  onChange={(e) => handleCategoryChange(index, e.target.value)}
+                  value={
+                    selectedCategories[index]
+                      ? categories.find((cat) => categoriesMap[cat] === selectedCategories[index])
+                      : ""
+                  }
+                >
+                  <option value="">Select category</option>
+                  {categories?.map((category) => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            );
+          })}
+        </div>
 
         {/* Submit Button */}
         <div className="flex justify-end">

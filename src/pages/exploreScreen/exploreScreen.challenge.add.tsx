@@ -215,7 +215,7 @@ const categoriesData = (TMData as any)?.data || [];
 
         {/* Visibility Field */}
         <div>
-          <label className="block text-sm font-medium mb-1">Challenge Visibility</label>
+          <label className="block text-sm font-medium mb-1">Type</label>
           <select
             {...register("visibility", { required: "Visibility is required" })}
             className="w-full p-2 border border-gray-2 rounded"

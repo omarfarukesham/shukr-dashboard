@@ -1,26 +1,35 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import MDEditor from "@uiw/react-md-editor";
 import { ArrowBigLeft } from "lucide-react";
 import { useGetChallengeByIdQuery } from "@/feature/exploreScreen/exploreChallengSlice";
+import Loader from "@/components/ui/Loader";
 
 const ChallengeViewPage = () => {
-  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
   const { data: challengeData1, isLoading } = useGetChallengeByIdQuery({ id: id as string });
 
-  const challengeData = (challengeData1 as any)?.data
+  const challengeData = (challengeData1 as any)?.data || null;
+  const dayCategories = challengeData?.templateId 
+  ? challengeData.templateId.map((cat) => cat.category) 
+  : [];
+
+
+
 
   useEffect(() => {
-    if (!isLoading && !challengeData) {
-      navigate("/challenge");
+    if (!challengeData && !isLoading) {
+      navigate("/challenge"); 
     }
   }, [challengeData, isLoading, navigate]);
 
   if (isLoading) {
-    return <p>Loading...</p>;
+    return <Loader />;
   }
+
+
 
   return (
     <div className="p-6">
@@ -34,6 +43,7 @@ const ChallengeViewPage = () => {
           Back
         </button>
       </div>
+
       <div className="space-y-6 bg-white rounded-lg shadow-lg p-6">
         {/* Title Field */}
         <div>
@@ -43,66 +53,71 @@ const ChallengeViewPage = () => {
           </p>
         </div>
 
-        {/* Challenge Image Field */}
+        {/* Image Field */}
         <div>
           <label className="block text-sm font-medium mb-1">Challenge Image</label>
           {challengeData?.image && (
-            <div className="mt-2">
-              <img src={challengeData.image} alt="Challenge" className="w-32 h-32 object-cover rounded" />
-            </div>
+            <img
+              src={challengeData.image}
+              alt="Challenge Preview"
+              className="w-32 h-32 object-cover rounded"
+            />
           )}
         </div>
 
-        {/* Template Details Field */}
+        {/* Description Field */}
         <div>
           <label className="block text-sm font-medium mb-1">Challenge Details</label>
-          <div
-            className="ql-editor border border-gray-2 rounded bg-gray-50 p-2"
-            style={{ height: "auto" }}
-
-            dangerouslySetInnerHTML={{ __html: challengeData?.description || "" }}
-          />
+          <div className="w-full p-2 border border-gray-2 rounded bg-gray-50">
+            <MDEditor.Markdown source={challengeData?.description} className="markdown p-4 bg-primary-200" />
+          </div>
         </div>
 
         {/* Category Field */}
         <div>
-          <label className="block text-sm font-medium mb-1 pt-10">Challenge Category</label>
+          <label className="block text-sm font-medium mb-1">Challenge Category</label>
           <p className="w-full p-2 border border-gray-2 rounded bg-gray-50">
             {challengeData?.category}
-          </p>
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-1">Challenge Duration</label>
-          <p className="w-full p-2 border border-gray-2 rounded bg-gray-50">
-            {challengeData?.duration}
-          </p>
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-1"> Challenge Streak</label>
-          <p className="w-full p-2 border border-gray-2 rounded bg-gray-50">
-            {challengeData?.streak}
           </p>
         </div>
 
         {/* Visibility Field */}
         <div>
-            <label className="block text-sm font-medium mb-1">Challenge Visibility</label>
-            <p className="w-full p-2 border border-gray-2 rounded bg-gray-50">
-              {challengeData?.visibility}
-            </p>
+          <label className="block text-sm font-medium mb-1">Type</label>
+          <p className="w-full p-2 border border-gray-2 rounded bg-gray-50">
+            {challengeData?.visibility === "FREE" ? "Free" : "Premium"}
+          </p>
         </div>
 
-        {/* Template Category Dropdown */}
+        {/* Duration Field */}
         <div>
-          <label className="block text-sm font-medium mb-1">Selected Template Categories</label>
+          <label className="block text-sm font-medium mb-1">Challenge Duration</label>
           <p className="w-full p-2 border border-gray-2 rounded bg-gray-50">
-            {challengeData?.templateId.join(", ")}
+            {challengeData?.duration} days
           </p>
+        </div>
+
+        {/*  Categories */}
+        <div>
+          <label className="block text-sm font-medium mb-1">Template Categories</label>
+          <div className="grid grid-cols-3 gap-4">
+            {Array.from({ length: challengeData?.duration || 0 }, (_, index) => {
+             
+
+              return (
+                <div key={index}>
+                  <label className="block text-sm font-medium mb-1">Day - {index + 1}</label>
+                  <p className="w-full p-2 border border-gray-2 rounded bg-gray-50">
+                    {String(dayCategories[index]) || "No category"}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>
   );
 };
-
 
 export default ChallengeViewPage;

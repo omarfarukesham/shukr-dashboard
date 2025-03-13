@@ -10,7 +10,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import DeleteModal from "@/components/modal/deleteModal";
 
 // Icons
@@ -21,6 +20,7 @@ import { EyeIcon } from "lucide-react";
 // API
 import { useDeleteChallengeMutation, useGetChallengesQuery } from "@/feature/exploreScreen/exploreChallengSlice";
 import { IChallenge } from "@/type/challengeContent.type";
+import Loader from "@/components/ui/Loader";
 
 // Constants
 const ITEMS_PER_PAGE = 10;
@@ -48,7 +48,7 @@ const ChallengePage = () => {
   };
 
   // Loading states
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <Loader />;
   if (error) return <p>Error fetching data</p>;
 
   // Data processing
