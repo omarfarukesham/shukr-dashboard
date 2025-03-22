@@ -19,6 +19,7 @@ interface UserInfo {
     isActive: boolean;
     isLoop: boolean;
     resettable: boolean;
+    isFeatured?: boolean;
     reminderTime: string;
     category: string;
     userInfo: UserInfo;

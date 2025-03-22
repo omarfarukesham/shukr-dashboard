@@ -40,11 +40,12 @@ const ChallengeEditPage = () => {
   } = useForm<IChallenge>();
 
   const challengeData = (challengeData1 as any)?.data || null;
-  console.log(challengeData?.templateId);
+  // console.log(challengeData?.templateId);
 
   useEffect(() => {
     if (challengeData) {
       setValue("name", challengeData.name);
+      setValue("isFeatured", challengeData.isFeatured);
       setValue("description", challengeData.description);
       setValue("category", challengeData.category);
       setValue("duration", challengeData.duration);
@@ -153,6 +154,19 @@ const ChallengeEditPage = () => {
           />
           {errors.name && (
             <p className="text-danger text-sm mt-1">{errors.name.message}</p>
+          )}
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-1">Is Featured</label>
+          <select
+            {...register("isFeatured", { required: "Is Featured is required" })}
+            className="w-full p-2 border border-gray-2 rounded"
+          >
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+          </select>
+          {errors.isFeatured && (
+            <p className="text-danger text-sm mt-1">{errors.isFeatured.message}</p>
           )}
         </div>
 

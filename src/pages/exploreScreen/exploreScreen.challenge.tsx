@@ -85,6 +85,7 @@ const ChallengePage = () => {
             <TableHead>Category</TableHead>
             <TableHead>Total Challenge</TableHead>
             <TableHead>Templates</TableHead>
+            <TableHead>Featured</TableHead>
             <TableHead>Type</TableHead>
             <TableHead className="text-center">Actions</TableHead>
           </TableRow>
@@ -101,6 +102,17 @@ const ChallengePage = () => {
               <TableCell>{challenge.category}</TableCell>
               <TableCell>{challenge.duration}</TableCell>
               <TableCell>{challenge.templateId.length}</TableCell>
+              <TableCell>
+                {challenge.isFeatured ? (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success text-white">
+                    Featured
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-4 text-gray-800">
+                    Not Featured
+                  </span>
+                )}
+              </TableCell>
               <TableCell>{challenge.visibility}</TableCell>
               <TableCell className="flex gap-2 justify-center">
                 <button

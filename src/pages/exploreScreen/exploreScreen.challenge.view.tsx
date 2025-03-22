@@ -52,6 +52,12 @@ const ChallengeViewPage = () => {
             {challengeData?.name}
           </p>
         </div>
+        <div>
+          <label className="block text-sm font-medium mb-1">Is Featured</label>
+          <p className="w-full p-2 border border-gray-2 rounded bg-gray-50">
+            {challengeData?.isFeatured ? "Yes" : "No"}
+          </p>
+        </div>
 
         {/* Image Field */}
         <div>
