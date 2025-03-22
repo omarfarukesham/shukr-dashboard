@@ -1,13 +1,14 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useGetHomeContentQuery } from "@/feature/homescreen/homeSlice";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useNavigate } from "react-router";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import Loader from "@/components/ui/Loader";
 
 const HomeScreenPage = () => {
   const { data, error, isLoading } = useGetHomeContentQuery();
   const navigation = useNavigate();
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <Loader />;
   if (error) return <p>Error fetching data</p>;
   const contentData = (data as any)?.data?.data || [];
 
@@ -71,9 +72,13 @@ const HomeScreenPage = () => {
                 <TableCell className="font-medium">
                   {item.title ? item.title : 'N/A'}
                 </TableCell>
-                <TableCell>
+                {/* <TableCell>
                   {item?.details ? item.details.slice(0, 50) + '...' : 'N/A'}
-                </TableCell>
+                </TableCell> */}
+                 <TableCell>
+                   <div dangerouslySetInnerHTML={{ __html: item?.details?.slice(0, 65) }} />
+                                ...
+                  </TableCell>
                 <TableCell>
                   {item.image ? (
                     <img 

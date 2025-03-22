@@ -50,11 +50,14 @@ const ChallengeEditPage = () => {
       setValue("category", challengeData.category);
       setValue("duration", challengeData.duration);
       setValue("visibility", challengeData.visibility);
-      setValue("templateId", challengeData?.templateId);
-      setImagePreview(challengeData?.image);
+      setValue("templateId", challengeData.templateId);
+      setImagePreview(challengeData.image);
       setImageUrl(challengeData.image);
       setDuration(challengeData.duration);
-      setSelectedCategories(challengeData.templateId || []);
+  
+      // Fix: Ensure selectedCategories is an array of template IDs
+      const templateIds = challengeData.templateId?.map((template: any) => template._id || template) || [];
+      setSelectedCategories(templateIds);
     }
   }, [challengeData, setValue]);
 
@@ -271,21 +274,21 @@ const ChallengeEditPage = () => {
               <div key={index}>
                 <label className="block text-sm font-medium mb-1">Day - {index + 1}</label>
                 <select
-                  required
-                  className="w-full p-2 border rounded"
-                  onChange={(e) => handleCategoryChange(index, e.target.value)}
-                  value={
-                    selectedCategories[index]
-                      ? categories.find((cat) => categoriesMap[cat] === selectedCategories[index])
-                      : ""
-                  }
-                >
-                  <option value="">Select category</option>
-                  {categories?.map((category) => (
-                    <option key={category} value={category}>
-                      {category}
-                    </option>
-                  ))}
+                    required
+                    className="w-full p-2 border rounded"
+                    onChange={(e) => handleCategoryChange(index, e.target.value)}
+                    value={
+                      selectedCategories[index]
+                        ? categories.find((cat) => categoriesMap[cat] === selectedCategories[index])
+                        : ""
+                    }
+                  >
+                    <option value="">Select category</option>
+                    {categories?.map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
                 </select>
               </div>
             );

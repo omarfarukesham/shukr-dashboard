@@ -10,7 +10,7 @@ import {
   TableHeader, 
   TableRow 
 } from "@/components/ui/table";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
+// import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import DeleteModal from "@/components/modal/deleteModal";
 
 // Icons
@@ -22,6 +22,7 @@ import {
   useGetHomeContentQuery, 
   useDeleteContentItemMutation 
 } from "@/feature/homescreen/homeSlice";
+import Loader from "@/components/ui/Loader";
 
 // Constants
 const ITEMS_PER_PAGE = 10;
@@ -48,7 +49,7 @@ const NewStickyPage = () => {
   };
 
   // Loading states
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <Loader />;
   if (error) return <p>Error fetching data</p>;
 
   // Data processing
@@ -83,10 +84,13 @@ const NewStickyPage = () => {
         </TableHeader>
         <TableBody>
           {displayedPosts.map((item, index) => (
-            <TableRow key={item._id}>
+            <TableRow key={item._id} className="hover:bg-gray-3 transition-colors duration-200">
               <TableCell className="font-medium">{index + 1}</TableCell>
               <TableCell className="font-medium">{item.title}</TableCell>
-              <TableCell>{item.details.slice(0, 50)}</TableCell>
+              <TableCell>
+                <div dangerouslySetInnerHTML={{ __html: item?.details?.slice(0, 65) }} />
+                     ...
+              </TableCell>
 
               <TableCell>
                 <span

@@ -24,7 +24,7 @@ export default function DailyDuaAdd() {
     if (!data) {
       return;
     }
-    console.log(data);
+    // console.log(data);
     await addContentItem({ data });
     toast.success('Content added successfully');
     navigate('/daily-dua');

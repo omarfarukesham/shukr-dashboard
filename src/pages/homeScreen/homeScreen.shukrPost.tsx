@@ -1,11 +1,12 @@
 import { useGetHomeContentQuery, useDeleteContentItemMutation } from "@/feature/homescreen/homeSlice";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
+// import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import EditIcon from "@/assets/icons/EditIcon";
 import DeleteIcon from "@/assets/icons/DeleteIcon";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import DeleteModal from "@/components/modal/deleteModal";
+import Loader from "@/components/ui/Loader";
 
 const ShukrPostPage = () => {
     const { data, error, isLoading } = useGetHomeContentQuery();
@@ -16,7 +17,7 @@ const ShukrPostPage = () => {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedId, setSelectedId] = useState<string | null>(null);
 
-    if (isLoading) return <LoadingSpinner />;
+    if (isLoading) return <Loader />;
     if (error) return <p>Error fetching data</p>;
 
     const shukrPosts = data?.data?.data?.shukrPosts || [];
@@ -54,7 +55,10 @@ const ShukrPostPage = () => {
                         <TableRow key={item._id} className="hover:bg-gray-3 transition-colors duration-200">
                             <TableCell className="font-medium">{index + 1}</TableCell>
                             <TableCell className="font-medium">{item.title}</TableCell>
-                            <TableCell>{item.details.slice(0, 50)}</TableCell>
+                            <TableCell>
+                                <div dangerouslySetInnerHTML={{ __html: item?.details?.slice(0, 65) }} />
+                                                ...
+                            </TableCell>
                             <TableCell>
                                 {item.image ? (
                                     <img 

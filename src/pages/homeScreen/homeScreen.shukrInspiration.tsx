@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
+// import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import DeleteModal from "@/components/modal/deleteModal";
 
 // Icons
@@ -22,6 +22,7 @@ import {
   useGetHomeContentQuery,
   useDeleteContentItemMutation,
 } from "@/feature/homescreen/homeSlice";
+import Loader from "@/components/ui/Loader";
 
 // Constants
 const ITEMS_PER_PAGE = 10;
@@ -48,7 +49,7 @@ const ShukrInspirationPage = () => {
   };
 
   // Loading states
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <Loader />;
   if (error) return <p>Error fetching data</p>;
 
   // Data processing

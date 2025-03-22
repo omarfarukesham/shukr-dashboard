@@ -20,8 +20,9 @@ import DeleteIcon from "@/assets/icons/DeleteIcon";
 
 import { useDeleteContentItemMutation, useGetHomeContentQuery } from "@/feature/homescreen/homeSlice";
 import AddModalForm from "@/components/modal/addFormModal";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
+// import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { useNavigate } from "react-router";
+import Loader from "@/components/ui/Loader";
 
 
 const ITEMS_PER_PAGE = 10;
@@ -43,7 +44,7 @@ const PositiveThinking = () => {
     setIsDeleteModalOpen(false);
   };
 
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <Loader />;
   if (error) return <p>Error fetching data</p>;
 
   const positiveItems = data?.data?.data?.positiveThinking || [];
@@ -76,7 +77,7 @@ const PositiveThinking = () => {
         </TableHeader>
         <TableBody>
           {displayedItems.map((item, index) => (
-            <TableRow key={item._id}>
+            <TableRow key={item._id} className="hover:bg-gray-3 transition-colors duration-200">
               <TableCell className="font-medium">{index + 1}</TableCell>
               <TableCell>
                 <img src={item.image} alt="" className="w-8 h-8 rounded" />
