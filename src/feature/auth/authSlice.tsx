@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-const apiUrl = "https://shukur-admin-iota.vercel.app/api/"
+const apiUrl = "https://api.theshukrapp.com/api/"
 
 export const authApi = createApi({
   reducerPath: 'authApi',

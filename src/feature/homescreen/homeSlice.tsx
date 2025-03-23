@@ -32,7 +32,7 @@ interface HomeContentResponse {
 export const homeContentApi = createApi({
   reducerPath: 'homeContentApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'https://shukur-admin-iota.vercel.app/api/',
+    baseUrl: 'https://api.theshukrapp.com/api/',
     prepareHeaders: (headers) => {
       headers.set('Content-Type', 'application/json');
       return headers;

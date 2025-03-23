@@ -4,7 +4,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
   export const templateApi = createApi({
     reducerPath: "templateApi",
     baseQuery: fetchBaseQuery({
-      baseUrl: "https://shukur-admin-iota.vercel.app/api/",
+      baseUrl: "https://api.theshukrapp.com/api/",
       prepareHeaders: (headers) => {
         const token = localStorage.getItem("token"); // Get the token from localStorage
         if (token) {
