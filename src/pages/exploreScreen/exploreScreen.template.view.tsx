@@ -6,6 +6,7 @@ import { useGetTemplateByIdQuery } from "@/feature/exploreScreen/exploreSlice";
 import { ArrowBigLeft } from "lucide-react";
 import toast from "react-hot-toast";
 import { ClipboardCopy } from "lucide-react";
+import Loader from "@/components/ui/Loader";
 
 const TemplateViewPage = () => {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ const TemplateViewPage = () => {
   }, [templateData, isLoading, navigate]);
 
   if (isLoading) {
-    return <p>Loading...</p>;
+    return <Loader />;
   }
 
   const handleCopy = (text: string) => {

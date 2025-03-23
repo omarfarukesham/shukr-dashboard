@@ -8,8 +8,10 @@ import "react-quill/dist/quill.snow.css";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-const CLOUDINARY_UPLOAD_PRESET = "ecom_preset";
-const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dbtskylxt/image/upload";
+// const CLOUDINARY_UPLOAD_PRESET = "ecom_preset";
+// const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dbtskylxt/image/upload";
+const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+const CLOUDINARY_URL = import.meta.env.VITE_CLOUDINARY_URL;
 
 interface IShukrPost {
   title: string;
@@ -75,7 +77,6 @@ export default function ShukrPostPage() {
   };
 
   const onFormSubmit: SubmitHandler<Omit<IShukrPost, "image">> = async (data) => {
-    console.log(data);
     try {
       if (!image) {
         alert("Please select an image first!");

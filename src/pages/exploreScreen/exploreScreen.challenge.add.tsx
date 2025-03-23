@@ -107,7 +107,6 @@ const categoriesData = (TMData as any)?.data || [];
     try {
       // Add selected template IDs to the form data
       data.templateId = selectedCategories.filter(Boolean); // Remove empty values
-      console.log("Form Data:", data);
 
       // Add your logic to process the form data
       await addChallenge({ data }).unwrap();

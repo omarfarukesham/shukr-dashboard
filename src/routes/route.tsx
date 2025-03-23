@@ -33,8 +33,8 @@ import {
   StickyNoteEditPage, 
   StickyNotePage } from "@/pages/homeScreen";
 import Login from "@/pages/Login";
-import ProductEdit from "@/pages/product/Product.edit";
-import { AdminRoute, PrivateRoute } from "@/utils/PrivateRoute";
+// import ProductEdit from "@/pages/product/Product.edit";
+// import { AdminRoute, PrivateRoute } from "@/utils/PrivateRoute";
 import { createBrowserRouter } from 'react-router-dom';
 
 
@@ -69,16 +69,16 @@ const routes = createBrowserRouter([
       //     </PrivateRoute>
       //   )
       // },
-      {
-        path: '/product/edit-product/:id',
-        element: (
-          <PrivateRoute>
-            <AdminRoute>
-              <ProductEdit />
-            </AdminRoute>
-          </PrivateRoute>
-        )
-      },
+      // {
+      //   path: '/product/edit-product/:id',
+      //   element: (
+      //     <PrivateRoute>
+      //       <AdminRoute>
+      //         <ProductEdit />
+      //       </AdminRoute>
+      //     </PrivateRoute>
+      //   )
+      // },
       {
         path: '/home-screen',
         element: <HomeScreenPage />

@@ -8,8 +8,12 @@ import "react-quill/dist/quill.snow.css";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-const CLOUDINARY_UPLOAD_PRESET = "ecom_preset";
-const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dbtskylxt/image/upload";
+// const CLOUDINARY_UPLOAD_PRESET = "ecom_preset";
+// const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dbtskylxt/image/upload";
+
+const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+const CLOUDINARY_URL = import.meta.env.VITE_CLOUDINARY_URL;
+
 
 interface IShukrIns {
   title: string;
@@ -89,7 +93,6 @@ export default function ShukrInspirationAddPage() {
           image: uploadedImageUrl,
       };
 
-      console.log(postData);
      await addContentItem({ data: postData }).unwrap();
       navigate("/shukr-ins");
     } catch (error) {

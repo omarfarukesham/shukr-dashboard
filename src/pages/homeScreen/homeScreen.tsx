@@ -112,7 +112,9 @@ const HomeScreenPage = () => {
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6 text-center">Content Management</h1>
       {contentData && Object.entries(contentData).map(([category, items]) => 
-        renderTable(items as any[], category)
+        <div key={`table-${category}`}>
+        {renderTable(items as any[], category)}
+      </div>
       )}
     </div>
   );

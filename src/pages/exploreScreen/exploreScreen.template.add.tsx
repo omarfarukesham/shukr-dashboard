@@ -177,7 +177,6 @@ const TemplateAddPage = () => {
       //   formData.templateImageUrl = imageUrl;
       // }
 
-      console.log("Form Data:", formData);
       await addTemplate({ data: formData }).unwrap();
       toast.success("Template added successfully");
       navigate("/template");

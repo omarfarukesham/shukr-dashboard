@@ -16,8 +16,11 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useEffect, useState } from "react";
 import toast from 'react-hot-toast';
 
-const CLOUDINARY_UPLOAD_PRESET = "ecom_preset";
-const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dbtskylxt/image/upload";
+// const CLOUDINARY_UPLOAD_PRESET = "ecom_preset";
+// const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dbtskylxt/image/upload";
+const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+const CLOUDINARY_URL = import.meta.env.VITE_CLOUDINARY_URL;
+
 
 const JazakallahEditPage = () => {
     const navigation = useNavigate()
@@ -71,7 +74,6 @@ const JazakallahEditPage = () => {
     };
   
     const onSubmit: SubmitHandler<Post> = async (data) => {
-      console.log(data);
       try {
         const uploadedImageUrl = await uploadImage();
         if (!uploadedImageUrl) return;

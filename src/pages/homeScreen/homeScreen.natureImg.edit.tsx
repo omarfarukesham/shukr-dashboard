@@ -17,8 +17,15 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useEffect, useState } from "react";
 import toast from 'react-hot-toast';
 
-const CLOUDINARY_UPLOAD_PRESET = "ecom_preset";
-const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dbtskylxt/image/upload";
+// const CLOUDINARY_UPLOAD_PRESET = "shukrApp";
+// const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/di5naers2/image/upload";
+
+const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+const CLOUDINARY_URL = import.meta.env.VITE_CLOUDINARY_URL;
+
+// console.log("CLOUDINARY_UPLOAD_PRESET:", CLOUDINARY_UPLOAD_PRESET);
+// console.log("CLOUDINARY_URL:", CLOUDINARY_URL);
+
 
 const NatureImgEditPage = () => {
     const navigation = useNavigate()
@@ -51,10 +58,13 @@ const NatureImgEditPage = () => {
     const uploadImage = async () => {
       if (!image) return imageUrl;
   
+     
+      // Show a loading indicator
       setUploading(true);
       const formData = new FormData();
       formData.append("file", image);
-      formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+      formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET!);
+      formData.append("cloud_name", "di5naers2");
   
       try {
         const response = await fetch(CLOUDINARY_URL, { method: "POST", body: formData });

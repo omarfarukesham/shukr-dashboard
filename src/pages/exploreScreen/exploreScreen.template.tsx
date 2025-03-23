@@ -48,7 +48,6 @@ const TemplateScreen = () => {
   // Handlers
   const handleDelete = async () => {
     if (!selectedId) return;
-    console.log(selectedId)
     await deleteTemplate({ id: selectedId }).unwrap();
     setIsDeleteModalOpen(false);
   };

@@ -64,7 +64,6 @@ const AddModalForm = ({ isOpen, onClose, category}) => {
    };
  
    const onFormSubmit: SubmitHandler<Omit<IPositiveThiniking, "image">> = async (data) => {
-     console.log(data);
      try {
        if (!image) {
          alert("Please select an image first!");

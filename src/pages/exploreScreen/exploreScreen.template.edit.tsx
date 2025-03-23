@@ -181,7 +181,6 @@ const templateData = templateData1?.data as any;
   };
 
   const onSubmit = async (data: TemplateFormData) => {
-    console.log(data)
     setIsSubmitting(true);
     try {
       const formData = {
@@ -193,7 +192,6 @@ const templateData = templateData1?.data as any;
 
       delete formData.blocks;
 
-      console.log("Form Data:", formData);
       await updateTemplate({ id: id || "", data: formData }).unwrap();
       toast.success("Template updated successfully");
       navigate("/template");

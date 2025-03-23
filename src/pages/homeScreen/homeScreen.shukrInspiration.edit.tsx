@@ -18,8 +18,10 @@ interface Post {
   image: string;
 }
 
-const CLOUDINARY_UPLOAD_PRESET = "ecom_preset";
-const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dbtskylxt/image/upload";
+// const CLOUDINARY_UPLOAD_PRESET = "ecom_preset";
+// const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dbtskylxt/image/upload";
+const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+const CLOUDINARY_URL = import.meta.env.VITE_CLOUDINARY_URL;
 
 const ShukrPostEditPage = () => {
   const { id } = useParams();
@@ -78,7 +80,6 @@ const ShukrPostEditPage = () => {
   };
 
   const onFormSubmit: SubmitHandler<Post> = async (data) => {
-    console.log(data);
     try {
       const uploadedImageUrl = await uploadImage();
       if (!uploadedImageUrl) return;
