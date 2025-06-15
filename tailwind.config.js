@@ -21,7 +21,7 @@ export default {
         200: '#A9A9B3',
       },
       secondary: {
-        DEFAULT: '#FBB145',
+        DEFAULT: '#FF326E',
         500: '#FBB145',
         400: '#FCC16A',
         300: '#FDD08F',
