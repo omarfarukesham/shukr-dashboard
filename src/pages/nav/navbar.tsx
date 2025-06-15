@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from "@/store/store";
 import { useState } from 'react';
 import { HomeIcon, OrderIcon, ProductIcon, UserIcon } from "@/assets/icons2";
+import Logo from "@/assets/images/Logo.png";
 
 const Navbar = () => {
   const isSidebarOpen = useSelector((state: RootState) => state.toggle.value);
@@ -20,12 +21,14 @@ const Navbar = () => {
 
   return (
     <div className="flex h-screen">
-      <nav className={`relative bg-primary text-white h-full transition-all duration-300 ${isSidebarOpen ? "w-54" : "w-20"}`}>
+      <nav className={`relative bg-[#0892D8] text-white h-full transition-all duration-300 ${isSidebarOpen ? "w-54" : "w-20"}`}>
         <div className="p-4">
           {/* Logo */}
           <div className="flex justify-between items-center mt-2">
             <div className={`font-bold transition-all duration-500 ${isSidebarOpen ? "text-xl text-center" : "text-center text-lg ml-2"}`}>
-              <Link to="/">{isSidebarOpen ? "Shukr Admin" : "SA"}</Link>
+              <Link to="/">{isSidebarOpen ? <>
+              <img src={Logo} alt="shukr Logo" className="w-32 h-auto"/>
+              </> : "SA"}</Link>
             </div>
           </div>
 

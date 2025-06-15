@@ -17,6 +17,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useLoginUserMutation } from "@/feature/auth/authSlice"
 import { verifyToken } from "@/utils/verfyToken";
 import { useState } from "react";
+// import logo from "@/assets/logo.png";
 
 // Define form validation schema
 const loginFormSchema = z.object({
@@ -71,10 +72,13 @@ export default function Login() {
   })
 
   return (
-    <div className="flex h-screen items-center justify-center relative z-0">
-      <Card className="w-[400px] bg-white">
+    <div className="flex h-screen items-center justify-center relative z-0 bg-[#0892D8]">
+      <Card className="w-[400px] bg-gradient-to-r from-[#9cd6f3] to-gray-1">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center">Shukr Admin Login</CardTitle>
+          <CardTitle className="text-center">
+            <p className="font-bold text-5xl italic mx-2">Shukr</p>
+            <p className="text-xl">Admin Login</p>
+          </CardTitle>
           {error && (
             <div className="mt-2 p-2 bg-red-50 border border-danger rounded-md">
               <p className="text-danger text-sm text-center">{error}</p>
@@ -114,7 +118,7 @@ export default function Login() {
                 type="submit" 
                 disabled={isLoading}
                 className={`w-full text-white ${
-                  isLoading ? 'bg-gray-7' : 'bg-primary hover:bg-secondary'
+                  isLoading ? 'bg-gray-7' : 'bg-[#0892D8] hover:bg-secondary'
                 } p-2 rounded-lg`}
               >
                 {isLoading ? "Processing..." : "Login"}
